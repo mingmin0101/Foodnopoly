@@ -3,7 +3,7 @@
 // $db_server = "localhost";
 // $db_user = "id9504225_foodnopoly";
 // $db_passwd = "web105306";
-// $db_name = "id9504225_web_project";
+// $db_name = "id9504225_web_project";  //謝杰修的localdb叫這個
 
 //本機用來連接MYSQL
 $db_server = "localhost"; //本機
