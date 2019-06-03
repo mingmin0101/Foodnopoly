@@ -67,34 +67,13 @@ else if(isset($_POST['name']) && isset($_POST['nickname']) && isset($_POST['acco
         textarea{vertical-align:top}
     </style>
 </head>
-<body style="font-family: 微軟正黑體; ">
-<!--  <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-    
-    <a class="navbar-brand" href="index.php">大Food翁</a>
-    
-    <ul class="navbar-nav">
-        <li class="nav-item active">
-          <a class="nav-link" href="#">Active</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link</a>
-        </li>
+<body style="font-family: 微軟正黑體; background-image: url(pic/restaurant_background.png)">
 
-    </ul>
-    <ul class="navbar-nav ml-auto" >
-        <li class="nav-item">
-          <a class="nav-link" href="member.php"><img src="chat_pic/login.png" style="height:32px;" onmouseover="this.src='chat_pic/login_hover.png'" onmouseleave="this.src='chat_pic/login.png'"></a>
-        </li>    
-    </ul>
-</nav> -->
 <br><br><br><br>
 <div class="container">
 <div class="row">
   <div class="col-4"></div>
-  <div class="card col-4">
+  <div class="card col-4" style="background-color: rgb(255,255,255,0.5);">
       <!-- <a href="hw06_105306023.php"><img src='hw6_pic/home.png' style="position: fixed; right: 100px; top:95px; height:32px;" onmouseover="this.src='hw6_pic/home_hover.png'" onmouseleave="this.src='hw6_pic/home.png'"></a>  -->
       <br>
       <!-- Nav tabs -->
