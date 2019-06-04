@@ -109,18 +109,14 @@ https://leafletjs.com/reference-1.4.0.html#map-example
         <!-- Brand/logo -->
         <a class="navbar-brand" href="index.php">大Food翁</a>
         <!-- Links -->
-        <!-- <ul class="nav navbar-nav">
-            <li class="nav-item active">
-              <a class="nav-link" href="#mapView">地圖檢視</a>
+        <ul class="nav navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="index.php">店家總覽</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#restaurantList">店家總覽</a>
+              <a class="nav-link" href="random_select.php">餐廳推薦</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#recommendation">隨機推薦</a>
-            </li>
-
-        </ul> -->
+        </ul>
         <ul class="navbar-nav ml-auto" >
             <?php
                 if(isset($_SESSION['account']) && $_SESSION['account'] != null){
@@ -219,6 +215,9 @@ https://leafletjs.com/reference-1.4.0.html#map-example
 <h3 align=center style="background-color:#0A5D90; color:#FFFFFF">政大美食地圖</h3>
 <div class="overflow-hidden">
 </div>
+
+<!-- 右邊餐廳簡介用script寫======================================================================= -->
+<!--
 <script>
   // 由 for 迴圈來產生右邊餐廳簡介
   for (i=0; i<rest_name.length; i++) {
@@ -228,7 +227,20 @@ https://leafletjs.com/reference-1.4.0.html#map-example
     document.write("<font size=3px>今日營業: " + open_hour[i] + "</font><br>");
     document.write("<font size=3px>" + address[i] + "</font><br><hr>");
   }
-</script>
+</script> -->
+
+<!-- 右邊餐廳簡介用php寫======================================================================= -->
+<?php
+      $sth = $dbh->query('SELECT * from restaurant ORDER BY restaurant_id');
+          while($row = $sth->fetch(PDO::FETCH_ASSOC)){
+              echo '<a href="restaurant.php?id='.$row['restaurant_id'].'"><p style="color: #0A5D90; font-size: 23px; margin-bottom:0">'.$row['name'].'</p></a>';
+              echo '<p style="margin-bottom:0"><img src="pic/star.png">星級: '.$row['grade'].'</img></p>';
+              echo '<p style="margin-bottom:0">今日營業: '.$row['open_hour'].'</p>';
+              echo '<p style="margin-bottom:0">'.$row['address'].'</p><hr>';
+          }
+
+?>
+
     <!-- <div>
     <h3 >餐廳</h3>
     <p>這裡是餐廳資料</p>

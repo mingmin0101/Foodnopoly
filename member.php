@@ -25,6 +25,8 @@ else if(isset($_POST['login_account']) && isset($_POST['login_password'])){
             $_SESSION['nickname'] = $row['nickname'];
             $_SESSION['realname'] = $row['realname'];
             $_SESSION['email_addr'] = $row['email_addr'];
+            $_SESSION['point'] = $row['point'];
+
             echo '<meta http-equiv=REFRESH CONTENT=0;url=index.php>';  // echo '<meta http-equiv=REFRESH CONTENT=0;url=hw06_105306023.php>';
         }
         else{$failStr = '帳號或密碼輸入錯誤';}

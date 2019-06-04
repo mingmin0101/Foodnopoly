@@ -131,12 +131,12 @@ include("pdoInc.php");     //PDO
               <a class="nav-link" href="#mapView">地圖檢視</a>
             </li> -->
             <li class="nav-item">
-              <a class="nav-link" href="#restaurantList">店家總覽</a>
+              <a class="nav-link" href="index.php">店家總覽</a>
             </li>
-            <!-- <li class="nav-item">
-              <a class="nav-link" href="#">餐廳推薦</a>
-            </li> 
             <li class="nav-item">
+              <a class="nav-link" href="random_select.php">餐廳推薦</a>
+            </li> 
+            <!-- <li class="nav-item">
               <a class="nav-link" href="#">線上訂位</a>
             </li> -->
             

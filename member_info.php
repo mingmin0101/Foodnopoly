@@ -9,27 +9,29 @@ if(!isset($_SESSION['account'])){  // $_SESSION['account'])類似身分代號的
 
 //修改會員資料
 $resultStr = '';
-if(isset($_POST['realname']) && isset($_POST['nickname']) && isset($_POST['password'])){
+if(isset($_POST['realname']) && isset($_POST['nickname']) && isset($_POST['password']) && isset($_POST['email_addr'])){
     $sth = $dbh->prepare('SELECT account FROM member WHERE account = ? and password = ?');   //檢查密碼對不對
     $sth->execute(array($_SESSION['account'], hash('sha256',$_POST['password'])));
     if($sth->rowCount() == 1){  //帳號密碼比對正確，剛好只有撈取到一筆資料
         if($_POST['newpwd1'] != '' && $_POST['newpwd2'] != ''){  //密碼、確認密碼輸入欄位皆不是空的
             if($_POST['newpwd1'] == $_POST['newpwd2']){   //密碼、確認密碼兩個輸入值相同
-                $sth2 =  $dbh->prepare('UPDATE member SET realname = ?, nickname = ?, password = ? WHERE account = ?');  //更新資料 UPDATE
-                $sth2->execute(array($_POST['realname'], $_POST['nickname'],  hash('sha256',$_POST['newpwd1']), $_SESSION['account']));
+                $sth2 =  $dbh->prepare('UPDATE member SET realname = ?, nickname = ?, password = ?, email_addr = ? WHERE account = ?');  //更新資料 UPDATE
+                $sth2->execute(array($_POST['realname'], $_POST['nickname'],  hash('sha256',$_POST['newpwd1']), $_POST['email_addr'], $_SESSION['account']));
                 $resultStr = '修改暱稱或密碼成功';
                 $_SESSION['nickname'] = $_POST['nickname'];
                 $_SESSION['realname'] = $_POST['realname'];
+                $_SESSION['email_addr'] = $_POST['email_addr'];
             }
             else {
                 $resultStr = '兩次新密碼填寫不同';
             }
         }
         else {  //沒有要修改密碼
-            $sth2 =  $dbh->prepare('UPDATE member SET realname = ?, nickname = ? WHERE account = ?');
-            $sth2->execute(array($_POST['realname'], $_POST['nickname'], $_SESSION['account']));
+            $sth2 =  $dbh->prepare('UPDATE member SET realname = ?, nickname = ?, email_addr = ? WHERE account = ?');
+            $sth2->execute(array($_POST['realname'], $_POST['nickname'], $_POST['email_addr'], $_SESSION['account']));
             $_SESSION['realname'] = $_POST['realname'];
             $_SESSION['nickname'] = $_POST['nickname'];
+            $_SESSION['email_addr'] = $_POST['email_addr'];
 
             $resultStr = '修改名稱或暱稱成功';
         }
@@ -130,12 +132,14 @@ if(isset($_SESSION['account'])){  //有登入狀態
       <!-- <h3>修改會員資料</h3> -->
          <form action="<?php echo basename($_SERVER['PHP_SELF']);?>" method="POST">   <!-- basename($_SERVER['PHP_SELF']) 抓本身的檔名 -->
             帳號：<?php echo $_SESSION['account'];?><br/>
+            累積點數：<?php echo $_SESSION['point'];?><br/>
             真實姓名：<input name="realname" value="<?php echo $_SESSION['realname']?>"><br/>
-            暱稱：<input name="nickname" value="<?php echo $_SESSION['nickname']?>"><br/>
-            密碼：<input name="password" placeholder="必填"><br/>
+            暱稱：        <input name="nickname" value="<?php echo $_SESSION['nickname']?>"><br/>
+            電子郵件：<input name="email" value="<?php echo $_SESSION['email_addr']?>"><br/>
+            密碼：        <input name="password" placeholder="必填"><br/>
             修改密碼：<input name="newpwd1" placeholder="僅修改密碼時需填"><br/>
-            確認密碼：<input name="newpwd2" placeholder="僅修改密碼時需填"><br/>
-            <input type="submit">
+            確認密碼：<input name="newpwd2" placeholder="僅修改密碼時需填"><br/><br/>
+            <input type="submit" value="修改">
         </form>
 
         <?php echo $resultStr;?>
