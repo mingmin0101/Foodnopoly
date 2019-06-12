@@ -1,8 +1,7 @@
-<!--
-轉盤範例
-http://www.htmleaf.com/html5/html5-canvas/201611174201.html 
-http://www.htmleaf.com/Demo/201611174202.html 
--->
+<?php
+session_start();
+include("pdoInc.php");     //PDO
+?>
 
 <!DOCTYPE html>
 <html>
@@ -10,62 +9,105 @@ http://www.htmleaf.com/Demo/201611174202.html
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>機會 命運</title>
     <link rel="stylesheet" type="text/css" href="spin_game/css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="spin_game/css/htmleaf-demo.css">
-    <link href="css/style.css" rel="stylesheet" type="text/css">
-
+    <link rel="stylesheet" type="text/css" href="spin_game/css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <title>大Food翁 - 機會 命運</title>
+    <!-- 轉盤範例  http://www.htmleaf.com/html5/html5-canvas/201611174201.html 
+                  http://www.htmleaf.com/Demo/201611174202.html -->
+    <style type="text/css">
+        .button {
+          /*background-color: #4CAF50; /* Green */*/
+          border: none;
+          color: white;
+          padding: 20px 10px;
+          text-align: center;
+          text-decoration: none;
+          font-size: 22px;
+          margin: 10px 10px;
+          -webkit-transition-duration: 0.4s; /* Safari */
+          transition-duration: 0.4s;
+          cursor: pointer;
+          border-radius: 8px;
+          width: 124px;
+        }
+        .button3 {
+          background-color: transparent; 
+          color: black; 
+          border: 2px solid #FFBE04;
+        }
+
+        .button3:hover {
+          background-color: #FFBE04;
+          color: white;
+        }
+
+        .buttonActive {
+          background-color: #FFBE04;
+          color: white;
+        }
+
+    </style>
 </head>
 <body style="font-family: 微軟正黑體; background-image: url(pic/restaurant_background.png)">
 
 <!-- https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_navbar_color&stacked=h -->
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
-        <!-- Brand/logo -->
-        <a class="navbar-brand" href="index.php">大Food翁</a>
-        <!-- Links -->
-        <ul class="nav navbar-nav">
-            <!-- <li class="nav-item active">
-              <a class="nav-link" href="#mapView">地圖檢視</a>
-            </li> -->
-            <li class="nav-item">
-              <a class="nav-link" href="index.php">店家總覽</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="random_select.php">餐廳推薦</a>
-            </li> 
-            <!-- 
-            <li class="nav-item">
-              <a class="nav-link" href="#">線上訂位</a>
-            </li> -->
-            
-        </ul>
-        <ul class="navbar-nav ml-auto" >
-            <?php
-                if(isset($_SESSION['account']) && $_SESSION['account'] != null){ 
-                    //修改會員資料
-                    echo '<a href="member_info.php"><img src="pic/profile.png" style="height:32px; margin:0px 5px;" onmouseover="this.src=\'pic/profile_hover.png\'" onmouseleave="this.src=\'pic/profile.png\'"></a>';
-                    //會員登出
-                    echo '<li class="nav-item"><a href="php_sess_logout.php"><img src="pic/logout.png" style="height:32px; margin:0px 5px;" onmouseover="this.src=\'pic/logout_hover.png\'" onmouseleave="this.src=\'pic/logout.png\'" onclick="<?php echo \'<meta http-equiv=REFRESH CONTENT=0;url=index.php>\';?>"></a></li>';
-                } 
-                else{
-                    echo '<li class="nav-item"><a href="member.php"><img src="pic/login.png" style="height:32px;" onmouseover="this.src=\'pic/login_hover.png\'" onmouseleave="this.src=\'pic/login.png\'"></a></li>';
-                }
-            ?>
-            <!-- <li class="nav-item">
-              <a class="nav-link" href="member.php"><img src="pic/login.png" style="height:32px;" onmouseover="this.src='pic/login_hover.png'" onmouseleave="this.src='pic/login.png'"></a>
-            </li>   -->  
-        </ul>
-    </nav>
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+    <!-- Brand/logo -->
+    <a class="navbar-brand" href="index.php">大Food翁</a>
+    <!-- Links -->
+    <ul class="nav navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="index.php">店家總覽</a></li>
+        <li class="nav-item"><a class="nav-link" href="random_select.php">餐廳推薦</a></li> 
+        
+    </ul>
+    <ul class="navbar-nav ml-auto" >
+        <?php
+            if(isset($_SESSION['account']) && $_SESSION['account'] != null){ 
+                //修改會員資料
+                echo '<a href="member_info.php"><img src="pic/profile.png" style="height:32px; margin:0px 5px;" onmouseover="this.src=\'pic/profile_hover.png\'" onmouseleave="this.src=\'pic/profile.png\'"></a>';
+                //會員登出
+                echo '<li class="nav-item"><a href="php_sess_logout.php"><img src="pic/logout.png" style="height:32px; margin:0px 5px;" onmouseover="this.src=\'pic/logout_hover.png\'" onmouseleave="this.src=\'pic/logout.png\'" onclick="<?php echo \'<meta http-equiv=REFRESH CONTENT=0;url=index.php>\';?>"></a></li>';
+            } 
+            else{
+                echo '<li class="nav-item"><a href="member.php"><img src="pic/login.png" style="height:32px;" onmouseover="this.src=\'pic/login_hover.png\'" onmouseleave="this.src=\'pic/login.png\'"></a></li>';
+            }
+        ?>
+    </ul>
+</nav>
 
 <br>
-    <div class="htmleaf-container">
+<div class='row'>
+    <div class="col-sm-1"></div>
+    <div class='col-sm-3'><br><br>
+        <form action="<?php echo basename($_SERVER['PHP_SELF']);?>" method="GET">
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='隨機'){echo 'buttonActive';} ?>" name='restaurant_type' value='隨機'><b>隨 機</b></button>
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='日本料理'){echo 'buttonActive';} ?>" name='restaurant_type' value='日本料理'><b>日 式</b></button><br>
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='中式料理'){echo 'buttonActive';} ?>" name='restaurant_type' value='中式料理'><b>中 式</b></button>
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='韓式料理'){echo 'buttonActive';} ?>" name='restaurant_type' value='韓式料理'><b>韓 式</b></button><br>
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='東南亞料理'){echo 'buttonActive';} ?>" name='restaurant_type' value='東南亞料理'><b>南 洋</b></button>
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='義式料理'){echo 'buttonActive';} ?>" name='restaurant_type' value='義式料理'><b>義 式</b></button><br>
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='美式料理'){echo 'buttonActive';} ?>" name='restaurant_type' value='美式料理'><b>美 式</b></button>
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='早午餐店'){echo 'buttonActive';} ?>" name='restaurant_type' value='早午餐店'><b>早午餐</b></button><br> 
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='飲料店'){echo 'buttonActive';} ?>" name='restaurant_type' value='飲料店'><b>飲 品</b></button>
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='下午茶'){echo 'buttonActive';} ?>" name='restaurant_type' value='下午茶'><b>下午茶</b></button><br> 
+        </form>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.buttonClassA').click(function(){
+               $(this).removeClass('buttonClassA').addClass('buttonClassB');
+            });
+        });
+    </script>
 
-        <div class="htmleaf-content">
-            <img src="spin_game/images/1.png" id="shan-img" style="display:none;" />
-            <img src="spin_game/images/2.png" id="sorry-img" style="display:none;" />
+    <div class='col-sm-7'>
+        <div class="htmleaf-container" >
+            <br><br>
+        <div class="htmleaf-content" style="width: 500px; height: 500px; margin: 10px 70px;">
             <div class="banner">
                 <div class="turnplate" style="background-image:url(spin_game/images/turnplate-bg.png);background-size:100% 100%;">
                     <canvas class="item" id="wheelcanvas" width="422px" height="422px"></canvas>
@@ -73,26 +115,51 @@ http://www.htmleaf.com/Demo/201611174202.html
                 </div>
             </div>
         </div>
+        </div>
     </div>
-    
+    <div class="col-sm-1"></div>
+
+</div>
+
     <script src="http://cdn.bootcss.com/jquery/1.11.0/jquery.min.js" type="text/javascript"></script>
     <script>window.jQuery || document.write('<script src="spin_game/js/jquery-1.11.0.min.js"><\/script>')</script>
     <script type="text/javascript" src="spin_game/js/awardRotate.js"></script>
     <script type="text/javascript">
     var turnplate={
-            restaraunts:[],             //大转盘奖品名称
-            colors:[],                  //大转盘奖品区块对应背景颜色
-            outsideRadius:192,          //大转盘外圆的半径
-            textRadius:155,             //大转盘奖品位置距离圆心的距离
-            insideRadius:68,            //大转盘内圆的半径
-            startAngle:0,               //开始角度
-            
-            bRotate:false               //false:停止;ture:旋转
+            restaraunts:[],             //大轉盤獎品名稱
+            colors:[],                  //大轉盤獎品區塊對應背景顏色
+            outsideRadius:192,          //大轉盤外圓的半徑  192
+            textRadius:155,             //大轉盤獎品位置距離圓心的距離 155
+            insideRadius:68,            //大轉盤內圓的半徑
+            startAngle:0,               //開始角度
+            bRotate:false               //false:停止;ture:旋轉
     };
 
+
+  
+
     $(document).ready(function(){
-        //动态添加大转盘的奖品与奖品区域背景颜色
-        turnplate.restaraunts = ["波波恰恰", "高句麗", "小曼谷", "古早味蛋餅", "金鮨日式料理", "龍角咖啡", "左撇子", "四川飯館", "米塔義式廚房", "小公寓"];
+        //動態添加大轉盤的獎品與獎品區域的背景顏色
+        // turnplate.restaraunts = ["波波恰恰", "高句麗", "小曼谷", "古早味蛋餅", "金鮨日式料理", "龍角咖啡", "左撇子", "四川飯館", "米塔義式廚房", "小公寓"];
+        <?php
+            if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']!='隨機'){
+                $restaurant = $dbh->prepare('SELECT * from restaurant WHERE category = ? ORDER BY RAND() LIMIT 10'); //ORDER BY RAND() 隨機順序
+                $restaurant->execute(array($_GET['restaurant_type']));  
+                echo 'turnplate.restaraunts = [';
+                while ($restaurantRow= $restaurant->fetch(PDO::FETCH_ASSOC)){
+                    echo '"'.$restaurantRow['name'].'", ';
+                } 
+                echo '];';
+            } else if (isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='隨機'){
+                $restaurant = $dbh->query('SELECT * from restaurant ORDER BY RAND() LIMIT 10');  //ORDER BY RAND() 隨機順序
+                echo 'turnplate.restaraunts = [';
+                while ($restaurantRow= $restaurant->fetch(PDO::FETCH_ASSOC)){
+                    echo '"'.$restaurantRow['name'].'", ';
+                } 
+                echo '];';
+
+            }
+        ?>
         turnplate.colors = ["#FFF4D6", "#FFFFFF", "#FFF4D6", "#FFFFFF","#FFF4D6", "#FFFFFF", "#FFF4D6", "#FFFFFF","#FFF4D6", "#FFFFFF"];
 
         
@@ -107,7 +174,7 @@ http://www.htmleaf.com/Demo/201611174202.html
             });
         };
 
-        //旋转转盘 item:奖品位置; txt：提示语;
+        //旋轉轉盤 item:獎品位置; txt：提示;
         var rotateFn = function (item, txt){
             var angles = item * (360 / turnplate.restaraunts.length) - (360 / (turnplate.restaraunts.length*2));
             if(angles<270){
@@ -121,7 +188,7 @@ http://www.htmleaf.com/Demo/201611174202.html
                 animateTo:angles+1800,
                 duration:8000,
                 callback:function (){
-                    alert(txt);
+                    // alert(txt);
                     turnplate.bRotate = !turnplate.bRotate;
                 }
             });
@@ -239,20 +306,6 @@ http://www.htmleaf.com/Demo/201611174202.html
                   ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
               }
               
-              //添加对应图标
-              if(text.indexOf("金币")>0){
-                  var img= document.getElementById("shan-img");
-                  img.onload=function(){  
-                      ctx.drawImage(img,-15,10);      
-                  }; 
-                  ctx.drawImage(img,-15,10);  
-              }else if(text.indexOf("谢谢参与")>=0){
-                  var img= document.getElementById("sorry-img");
-                  img.onload=function(){  
-                      ctx.drawImage(img,-15,10);      
-                  };  
-                  ctx.drawImage(img,-15,10);  
-              }
               //把当前画布返回（调整）到上一个save()状态之前 
               ctx.restore();
               //----绘制奖品结束----

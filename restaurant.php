@@ -169,7 +169,7 @@ include('reply.php');
     <div class="container" id="restaurantInfo">
         <h4 style="text-align: center;">餐廳資訊</h4>
         <?php
-            $rid = 1;
+            $rid = $_GET['id'];
             $select = mysqli_query($con, "SELECT *
                                         FROM restaurant
                                         WHERE restaurant.restaurant_id = $rid");
@@ -191,7 +191,7 @@ include('reply.php');
         <br/>
 
         <?php
-        $rid = 1;
+        // $rid = 1;
             $select = mysqli_query($con, "SELECT *
                                         FROM restaurant
                                         WHERE restaurant.restaurant_id = $rid");

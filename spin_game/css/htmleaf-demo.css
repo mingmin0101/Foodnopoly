@@ -58,8 +58,8 @@ a:hover,a:focus{color:#74777b;text-decoration: none;}
 	margin: 0 auto;
 }
 .htmleaf-content{
-	width: 700px;
-	height: 700px;
+	width: 500px;  /*700*/
+	height: 500px;
 	margin: 50px auto;
 }
 .bgcolor-1 { background: #f0efee; }
