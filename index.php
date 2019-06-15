@@ -19,7 +19,7 @@ include("pdoInc.php");     //PDO
     <script src="js/chatroom.js"></script>
 
 </head>
-<body style="font-family: 微軟正黑體;">
+<body style="font-family: 微軟正黑體; background-image: url(pic/restaurant_background.png)">
 
 <!-- https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_navbar_color&stacked=h -->
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">

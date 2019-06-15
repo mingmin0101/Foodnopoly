@@ -99,7 +99,7 @@ https://leafletjs.com/reference-1.4.0.html#map-example
 
 
 </head>
-<body style="font-family: 微軟正黑體;">
+<body style="font-family: 微軟正黑體; background-image: url(pic/restaurant_background.png)">
 
 
 <!-- https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_navbar_color&stacked=h -->
