@@ -21,13 +21,12 @@ else if(isset($_POST['login_account']) && isset($_POST['login_password'])){
         // 比對密碼
         if($row['password'] == hash('sha256', $pwd)){
             $_SESSION['account'] = $row['account'];
-            // $_SESSION['password'] = $row['password'];
             $_SESSION['nickname'] = $row['nickname'];
             $_SESSION['realname'] = $row['realname'];
             $_SESSION['email_addr'] = $row['email_addr'];
             $_SESSION['point'] = $row['point'];
 
-            echo '<meta http-equiv=REFRESH CONTENT=0;url=index.php>';  // echo '<meta http-equiv=REFRESH CONTENT=0;url=hw06_105306023.php>';
+            echo '<meta http-equiv=REFRESH CONTENT=0;url=index.php>';  
         }
         else{$failStr = '帳號或密碼輸入錯誤';}
     }
@@ -47,11 +46,10 @@ else if(isset($_POST['name']) && isset($_POST['nickname']) && isset($_POST['acco
                     hash('sha256',$_POST['password']),
                     $_POST['email'],
                 ));
-            echo '<meta http-equiv=REFRESH CONTENT=0;url=member.php>'; // echo '<meta http-equiv=REFRESH CONTENT=0;url=hw06_105306023.php>';
+            echo '<meta http-equiv=REFRESH CONTENT=0;url=member.php>'; 
 
         }  
     } else {
-        //echo '<meta http-equiv=REFRESH CONTENT=0;url=hw06_member.php>';
         $failStr = '帳號重複or輸入不正確，未成功註冊';
     } 
 }
@@ -76,7 +74,7 @@ else if(isset($_POST['name']) && isset($_POST['nickname']) && isset($_POST['acco
 <div class="row">
   <div class="col-4"></div>
   <div class="card col-4" style="background-color: rgb(255,255,255,0.5);">
-      <!-- <a href="hw06_105306023.php"><img src='hw6_pic/home.png' style="position: fixed; right: 100px; top:95px; height:32px;" onmouseover="this.src='hw6_pic/home_hover.png'" onmouseleave="this.src='hw6_pic/home.png'"></a>  -->
+
       <br>
       <!-- Nav tabs -->
       <ul class="nav nav-tabs justify-content-center nav-justified" role="tablist">
@@ -86,7 +84,6 @@ else if(isset($_POST['name']) && isset($_POST['nickname']) && isset($_POST['acco
         <li class="nav-item">
           <a class="nav-link" data-toggle="tab" href="#join">註冊會員</a>
         </li>
-       
       </ul>
 
       <!-- Tab panes -->
@@ -94,31 +91,29 @@ else if(isset($_POST['name']) && isset($_POST['nickname']) && isset($_POST['acco
         <div id="login" class="container tab-pane active"><br>
           <h3>登入會員</h3>
           <form action="member.php" method="post">
-            帳號：<input type="text" name="login_account"><br>
-            密碼：<input type="text" name="login_password"><br><br>
-            <input type="submit">
+            帳號：<input type="text" name="login_account" class="form-control"><br>
+            密碼：<input type="text" name="login_password" class="form-control"><br><br>
+            <input type="submit" class="btn btn-warning">
           </form>    
         </div>
 
         <div id="join" class="container tab-pane fade"><br>
           <h3>註冊會員</h3>
           <form action="member.php" method="post">
-            姓名：<input type="text" name="name"><br>
-            綽號：<input type="text" name="nickname"><br>
-            信箱：<input type="text" name="email"><br>
-            帳號：<input type="text" name="account" placeholder="限大小寫英文字母及數字" pattern="[A-Za-z0-9]+" max='20'><br>
-            密碼：<input type="text" name="password" placeholder="限大小寫英文字母及數字" pattern="[A-Za-z0-9]+"><br><br>
-            <input type="submit">
+            姓名：<input type="text" name="name" class="form-control"><br>
+            綽號：<input type="text" name="nickname" class="form-control"><br>
+            信箱：<input type="text" name="email" class="form-control"><br>
+            帳號：<input type="text" name="account" class="form-control" placeholder="限大小寫英文字母及數字" pattern="[A-Za-z0-9]+" max='20'><br>
+            密碼：<input type="text" name="password" class="form-control" placeholder="限大小寫英文字母及數字" pattern="[A-Za-z0-9]+"><br><br>
+            <input type="submit" class="btn btn-warning">
           </form>
       </div>
-
+    <?php echo $failStr;?>
   </div>
   <div class="col-4"></div>
 </div>
   
-  
 
-<?php echo $failStr; ?>
 
   </div>
 </div>

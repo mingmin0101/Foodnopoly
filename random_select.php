@@ -61,7 +61,7 @@ include("pdoInc.php");     //PDO
     <!-- Links -->
     <ul class="nav navbar-nav">
         <li class="nav-item"><a class="nav-link" href="index.php">店家總覽</a></li>
-        <li class="nav-item"><a class="nav-link" href="random_select.php">餐廳推薦</a></li> 
+        <li class="nav-item"><a class="nav-link" href="random_select.php?restaurant_type=隨機">餐廳推薦</a></li> 
         
     </ul>
     <ul class="navbar-nav ml-auto" >

@@ -1,0 +1,29 @@
+body{
+    font-family: 微軟正黑體;
+}
+
+/* img hover */   
+img{
+    z-index: 0;
+    opacity: 1;
+    transition: .5s ease;
+    backface-visibility: hidden;
+}
+
+/* 圖片上的文字 */
+.centered {
+  z-index:1;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-family: 微軟正黑體;
+  /*font-size: 30px;*/
+  text-shadow: 2px 2px rgb(0,0,0,0.8);
+}
+
+
+.imageHover:hover img{
+    opacity: 0.5;
+}
