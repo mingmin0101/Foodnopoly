@@ -20,7 +20,6 @@ include("pdoInc.php");     //PDO
                   http://www.htmleaf.com/Demo/201611174202.html -->
     <style type="text/css">
         .button {
-          /*background-color: #4CAF50; /* Green */*/
           border: none;
           color: white;
           padding: 20px 10px;
@@ -91,7 +90,7 @@ include("pdoInc.php");     //PDO
         <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='東南亞料理'){echo 'buttonActive';} ?>" name='restaurant_type' value='東南亞料理'><b>南 洋</b></button>
         <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='義式料理'){echo 'buttonActive';} ?>" name='restaurant_type' value='義式料理'><b>義 式</b></button><br>
         <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='美式料理'){echo 'buttonActive';} ?>" name='restaurant_type' value='美式料理'><b>美 式</b></button>
-        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='早午餐店'){echo 'buttonActive';} ?>" name='restaurant_type' value='早午餐店'><b>早午餐</b></button><br> 
+        <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='早午餐'){echo 'buttonActive';} ?>" name='restaurant_type' value='早午餐'><b>早午餐</b></button><br> 
         <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='飲料店'){echo 'buttonActive';} ?>" name='restaurant_type' value='飲料店'><b>飲 品</b></button>
         <button class="button button3 <?php if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']=='下午茶'){echo 'buttonActive';} ?>" name='restaurant_type' value='下午茶'><b>下午茶</b></button><br> 
         </form>

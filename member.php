@@ -38,7 +38,7 @@ else if(isset($_POST['name']) && isset($_POST['nickname']) && isset($_POST['acco
     $check->execute(array($_POST['account']));
     if($check->rowCount() == 0){  //如果account在資料庫中撈不到紀錄
         $create = $dbh->prepare('INSERT INTO member (realname, nickname, account, password, email_addr) VALUES (?, ?, ?, ?, ?)');
-        if($_POST['name'] != NULL && $_POST['nickname'] != NULL && $_POST['account'] != NULL && $_POST['password'] != NULL){ //檢查是否有欄位空白
+        if($_POST['name'] != NULL && $_POST['nickname'] != NULL && $_POST['account'] != NULL && $_POST['password'] != NULL && $_POST['email'] != NULL){ //檢查是否有欄位空白
             $create->execute(array(
                     $_POST['name'],
                     $_POST['nickname'],

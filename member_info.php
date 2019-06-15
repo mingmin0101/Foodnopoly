@@ -46,27 +46,40 @@ if(isset($_POST['realname']) && isset($_POST['nickname']) && isset($_POST['passw
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <!-- <link rel="stylesheet" href="styles/coupon.css"> -->
+    <link rel="stylesheet" href="styles/checkbox.css">
+    <link rel="stylesheet" href="styles/coupon.css">
+    <!-- coupon 輪軸 -->
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/assets/owl.carousel.min.css'>
+    <script src="http://cdn.bootcss.com/jquery/1.11.0/jquery.min.js" type="text/javascript"></script>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <script src='js/sortTable.js'></script>
-<!-- pills -->
+    <script src='js/couponFilter.js'></script>
+
 <style type="text/css">
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
     color: white;
     background-color: #FFBE04;
 }
-a {
+.nav-pills a {
     color: black;
     text-decoration: none;
     background-color: transparent;
 }
-a:hover {
+.nav-pills a:hover {
     color: #FFBE04;
     text-decoration: none;
 }
+</style>
+<!-- 修改會員資料css -->
+<style>
+    td{
+        padding:4px 0px;
+        height:45px;
+    }
 </style>
 <!-- point record css -->
 <style type="text/css">
@@ -85,6 +98,86 @@ $(document).ready(function(){
   });
 });
 </script>
+
+<!-- coupon js -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js'></script>
+<script type="text/javascript">
+        $(function(){
+            $('.mhn-slide').owlCarousel({
+                nav:true,
+                //loop:true,
+                slideBy:'page',
+                rewind:false,
+                responsive:{
+                    0:{items:1},
+                    480:{items:2},
+                    600:{items:3},
+                    1000:{items:4},
+                },
+                smartSpeed:70,
+                navText:['<svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"></path></svg>','<svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"></path></svg>']
+            });
+        });
+</script>
+
+<!-- coupon modal -->
+<script>
+// When the user clicks the button, open the modal 
+function useCoupon(id){ 
+    var model_id = "myModal" + id.toString();
+    document.getElementById(model_id).style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+function closeModal(id) {
+    var model_id = 'myModal'+ id.toString();
+    document.getElementById(model_id).style.display = "none";
+}
+
+</script>
+<style type="text/css">
+ /* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  /*left: 0;*/
+  /*top: 0;*/
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 10px 35px 20px 35px;
+  border: 1px solid #888;
+  width: 50%;
+
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  text-align:right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
+
 
 </head>
 <body style="font-family: 微軟正黑體; background-image: url(pic/restaurant_background.png)">
@@ -131,33 +224,7 @@ $(document).ready(function(){
       <li class="nav-item">
         <a class="nav-link" data-toggle="pill" href="#coupon"><b>兌換coupon</b></a>
       </li>
-<!--       <li class="nav-item">
-        <a class="nav-link disabled" href="#"></a>
-      </li> -->
     </ul>
-
-    <style type="text/css">
-    .nav-pills .nav-link.active, .nav-pills .show>.nav-link {
-        color: white;
-        background-color: #FFBE04;
-    }
-    .nav-pills a {
-        color: black;
-        text-decoration: none;
-        background-color: transparent;
-    }
-    .nav-pills a:hover {
-        color: #FFBE04;
-        text-decoration: none;
-    }
-    </style>
-
-    <style>
-        td{
-            padding:4px 0px;
-            height:45px;
-        }
-    </style>
 
     <!-- Tab panes -->
     <div class="tab-content">
@@ -223,6 +290,8 @@ $(document).ready(function(){
                         </tr>
                     </thead>
                     <tbody id="myCouponTable">
+
+
 <?php
     if (isset($_SESSION['account'])){   //有登入
         $member = $dbh->prepare('SELECT id from member WHERE account = ?');  //找出目前登入的會員
@@ -244,13 +313,17 @@ $(document).ready(function(){
             $discount = 100 - $couponInfoRow['discount'];
 
             if((strtotime(date('Y-m-d H:i:s')) < strtotime($couponInfoRow['expiration date'])) && $couponRow['status'] == 'valid'){  //檢查是否超過到期日 && 有沒有被兌換過
-                echo '<tr><td>'.$restaurantRow['name'].'</td><td>'.$discount.'% off</td><td>'.$couponInfoRow['details'].'</td><td>'.$couponInfoRow['expiration date'].'</td><td><button class="btn btn-warning">兌換條碼</button></td></tr>';
+                echo '<tr><td>'.$restaurantRow['name'].'</td><td>'.$discount.'% off</td><td>'.$couponInfoRow['details'].'</td><td>'.$couponInfoRow['expiration date'].'</td><td><button class="btn btn-warning" onclick="useCoupon('.$couponRow['id'].')">兌換條碼</button></td></tr>';
+
+                echo '<div id="myModal'.$couponRow['id'].'" class="modal">
+                        <div class="modal-content"><span onclick=closeModal('.$couponRow['id'].') class="close">&times;</span><p>兌換條碼<br><br>
+                        <img src='.$couponInfoRow['barcode'].' style="width:100%;"><br><button class="btn btn-warning" style="float:right;" onclick="changeCouponStatus('.$couponRow['id'].')">使 用</button><br>
+                        </p></div></div>';
+
             } else if ((strtotime(date('Y-m-d H:i:s')) < strtotime($couponInfoRow['expiration date'])) && $couponRow['status'] != 'valid') {
                 echo '<tr><td>'.$restaurantRow['name'].'</td><td>'.$discount.'% off</td><td>'.$couponInfoRow['details'].'</td><td>'.$couponInfoRow['expiration date'].'</td><td><button class="btn btn-secondary" disabled>已兌換</button></td></tr>';
             } else if (strtotime(date('Y-m-d H:i:s')) > strtotime($couponInfoRow['expiration date'])){
                 echo '<tr><td>'.$restaurantRow['name'].'</td><td>'.$discount.'% off</td><td>'.$couponInfoRow['details'].'</td><td>'.$couponInfoRow['expiration date'].'</td><td><button class="btn btn-danger" disabled>已到期</button></td></tr>';
-
-
             };
 
         }  
@@ -258,7 +331,23 @@ $(document).ready(function(){
     }
 
 ?>
-                        
+
+<!-- ###############################3 -->
+<script>
+function changeCouponStatus(couponID){
+    $
+    $.post(
+        "coupon_used.php",
+        {
+            id: couponID
+        }
+    );
+    window.location.reload();
+}
+ 
+</script>
+<!-- ############################### -->
+                       
                     </tbody>
                     </table>
                 </div>
@@ -270,70 +359,67 @@ $(document).ready(function(){
 
 
         <!-- 兌換coupon頁面 -->
-        <!-- https://www.w3schools.com/howto/howto_js_filter_elements.asp -->
-        <!-- https://www.w3schools.com/howto/howto_css_product_card.asp -->
         <div class="tab-pane container fade" id="coupon">
-
-<!-- checkbox -->
-<script type="text/javascript">
-// Listen for click on toggle checkbox
-$('#select-all').click(function(event) {   
-    if(this.checked) {
-        // Iterate each checkbox
-        $('input[type="checkbox"]').each(function() {
-            this.checked = true;                        
-        });
-    } else {
-        $(':checkbox').each(function() {
-            this.checked = false;                       
-        });
-    }
-});
-</script>
-            <br>
+            <br><br>
+            
             <div class='row'>
-                <div class="col-sm-2" style="padding: 0px 15px 0px 0px">
-                    <label class="container">One
-                      <input type="checkbox" checked="checked">
-                      <span class="checkmark"></span>
-                    </label>
-                    <label class="container">Two
-                      <input type="checkbox">
-                      <span class="checkmark"></span>
-                    </label>
-                    <label class="container">Three
-                      <input type="checkbox">
-                      <span class="checkmark"></span>
-                    </label>
-                    <label class="container">Four
-                      <input type="checkbox">
-                      <span class="checkmark"></span>
-                    </label>
-                    <label class="container">all
-                      <input type="checkbox" id='select-all'>
-                      <span class="checkmark"></span>
-                    </label>
+                <div class="col-sm-12">
+                    <div class="htmleaf-container">
+                        <div class="container">
+                            <div class="mhn-slide owl-carousel">
+                <?php
+                if (isset($_SESSION['account'])){   //有登入
+                    $coupon = $dbh->query('SELECT * from coupon');  //撈出全部coupon
 
+                    while($couponRow = $coupon->fetch(PDO::FETCH_ASSOC)){
+                        $restaurant = $dbh->prepare('SELECT * FROM restaurant WHERE restaurant_id = ?');
+                        $restaurant->execute(array($couponRow['restaurant_id']));
+                        $restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC);
+                        
+                        if(strtotime(date('Y-m-d H:i:s')) < strtotime($couponRow['expiration date'])){  //檢查有效期限
+                            echo '<div class="mhn-item filter_card '.$restaurantRow['category'].'"><div class="mhn-inner">
+                            <div class="mhn-img" style="background-image: url(rest_pic/'.$restaurantRow['restaurant_id'].'.jpg)"></div>
+                            <div class="mhn-text">
+                            <div class="row">
+                            <div class="col-sm-8"><h5 style="text-align: left;">'.$restaurantRow['name'].'</h5></div>
+                            <div class="col-sm-4"><h4 style="color: #FFBE04;">'.$couponRow['discount'].'折</h4></div>
+                            </div>
+                            <div class="row"><div class="col-sm-12"><p>'.$couponRow['details'].'</p></div></div>
+                            <div class="row"><div class="col-sm-12"><p>到期日:'.$couponRow['expiration date'].'</p></div></div>
+                            <button class="coupon_button" onclick="redeemCoupon()">兌 換</button>
+                            </div></div></div>';
+                        }                       
+                    }
+                }
+                ?>
+
+                <script>
+                function redeemCoupon() {
+                  var txt;
+                  if (confirm("你確定要兌換這張coupon麻!")) {
+                    txt = "You pressed OK!";
+                  } else {
+                    txt = "You pressed Cancel!";
+                  }
+                  document.getElementById("demo").innerHTML = txt;
+                }
+                </script>
+                <style type="text/css">
+                    /*.filter_card{ display: none; }/* Hidden by default */*/
+                    .show{ display: block;}/* The "show" class is added to the filtered elements */
+                </style>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class='col-sm-5'>
-                    <div class="card">
-                      <div class="card-body">六折優惠券</div> 
-                    </div>
-                    <br>
-                    <div class="card">
-                      <div class="card-body">Content</div> 
-                    </div>
-                </div>
-                <div class='col-sm-5'>
-                    <div class="card">
-                      <div class="card-body">Content</div> 
-                    </div>
-                    <br>
-                    <div class="card">
-                      <div class="card-body">Content</div> 
-                    </div>
-                </div>
+                <p id="demo"></p>
+
+
+    
+           
+
             </div>
+            
         </div>
 
         <!-- 評論紀錄頁面，要串聯杰修負責的資料表 -->
@@ -365,9 +451,6 @@ $('#select-all').click(function(event) {
 
                 </tbody>
             </table>
-
-
-
         </div>
         
 
@@ -382,51 +465,45 @@ $('#select-all').click(function(event) {
                     <div class="col-sm-1"></div>
                     <div class="col-sm-3"><b>剩餘可用Food Points</b></div>
                 </div>
-<?php
-    if (isset($_SESSION['account'])){   //有登入
-        $member = $dbh->prepare('SELECT id from member WHERE account = ?');  //找出目前登入的會員
-        $member->execute(array($_SESSION['account']));
-        $memberID = $member->fetch(PDO::FETCH_ASSOC);
 
-        $point1 = $dbh->prepare('SELECT sum(point_in) AS sumIN, sum(point_out) AS sumOUT, sum(point_in)-sum(point_out) AS sumTotal from pointrecord WHERE member_id = ? ORDER BY id');   
-        $point1->execute(array($memberID['id']));
-        $pointRow1= $point1->fetch(PDO::FETCH_ASSOC);
-        echo '<div class="row" style="padding: 5px 120px;text-align: center;">
-                <div class="col-sm-3" style="font-size: 25px; color: #40424C;"><b>'.$pointRow1['sumIN'].'</b></div>
-                <div class="col-sm-1"><b>-</b></div>
-                <div class="col-sm-4" style="font-size: 25px; color: #8793A5;"><b>'.$pointRow1['sumOUT'].'</b></div>
-                <div class="col-sm-1"><b>=</b></div>
-                <div class="col-sm-3" style="font-size: 25px; color: #FFBE04;"><b>'.$pointRow1['sumTotal'].'</b></div></div><br></div><br>';   
-        echo '<table class="table table-hover"><thead>
-                    <tr>
-                        <th class="count">點數計算</th>
-                        <th class="record">點數兌換/使用紀錄</th>
-                        <th class="date">日期</th>
-                    </tr>
-                  </thead>
-                  <tbody>';
+                <?php
+                    if (isset($_SESSION['account'])){   //有登入
+                        $member = $dbh->prepare('SELECT id from member WHERE account = ?');  //找出目前登入的會員
+                        $member->execute(array($_SESSION['account']));
+                        $memberID = $member->fetch(PDO::FETCH_ASSOC);
+
+                        $point1 = $dbh->prepare('SELECT sum(point_in) AS sumIN, sum(point_out) AS sumOUT, sum(point_in)-sum(point_out) AS sumTotal from pointrecord WHERE member_id = ? ORDER BY id');   
+                        $point1->execute(array($memberID['id']));
+                        $pointRow1= $point1->fetch(PDO::FETCH_ASSOC);
+                        echo '<div class="row" style="padding: 5px 120px;text-align: center;">
+                                <div class="col-sm-3" style="font-size: 25px; color: #40424C;"><b>'.$pointRow1['sumIN'].'</b></div>
+                                <div class="col-sm-1"><b>-</b></div>
+                                <div class="col-sm-4" style="font-size: 25px; color: #8793A5;"><b>'.$pointRow1['sumOUT'].'</b></div>
+                                <div class="col-sm-1"><b>=</b></div>
+                                <div class="col-sm-3" style="font-size: 25px; color: #FFBE04;"><b>'.$pointRow1['sumTotal'].'</b></div></div><br></div><br>';   
+                        echo '<table class="table table-hover"><thead>
+                                    <tr>
+                                        <th class="count">點數計算</th>
+                                        <th class="record">點數兌換/使用紀錄</th>
+                                        <th class="date">日期</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>';
+                        
+                        $point2 = $dbh->prepare('SELECT * from pointrecord WHERE member_id = ? ORDER BY id');   
+                        $point2->execute(array($memberID['id']));
+                        while ($pointRow= $point2->fetch(PDO::FETCH_ASSOC)){
+                            if($pointRow['point_in']!=0 && $pointRow['point_out']==0){  //增加點數
+                                echo '<tr><td class="count" style="color:#FFBE04;">+'.$pointRow['point_in'].'</td><td class="record">'.$pointRow['record'].'</td><td class="date">'.$pointRow['time'].'</td></tr>';
+                            } else if($pointRow['point_in']==0 && $pointRow['point_out']!=0){  //減少點數
+                                echo '<tr><td class="count" style="color:#8793A5;">-'.$pointRow['point_out'].'</td><td class="record">'.$pointRow['record'].'</td><td class="date">'.$pointRow['time'].'</td></tr>';
+                            }  
+                            
+                        } 
+                        echo '</tbody></table>';
+                    }
+                ?>               
         
-        $point2 = $dbh->prepare('SELECT * from pointrecord WHERE member_id = ? ORDER BY id');   
-        $point2->execute(array($memberID['id']));
-        while ($pointRow= $point2->fetch(PDO::FETCH_ASSOC)){
-            if($pointRow['point_in']!=0 && $pointRow['point_out']==0){  //增加點數
-                echo '<tr><td class="count" style="color:#FFBE04;">+'.$pointRow['point_in'].'</td><td class="record">'.$pointRow['record'].'</td><td class="date">'.$pointRow['time'].'</td></tr>';
-            } else if($pointRow['point_in']==0 && $pointRow['point_out']!=0){  //減少點數
-                echo '<tr><td class="count" style="color:#8793A5;">-'.$pointRow['point_out'].'</td><td class="record">'.$pointRow['record'].'</td><td class="date">'.$pointRow['time'].'</td></tr>';
-            }  
-            
-        } 
-        echo '</tbody></table>';
-    }
-?>
-                  
-                
-            
-                
-
-        
-
-
         </div>
     </div>
 
