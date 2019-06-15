@@ -2,6 +2,7 @@
 session_start();
 include("pdoInc.php");     //PDO
 include('reply.php');
+$rid = $_GET['id'];
 ?>
 
 <html>
@@ -120,7 +121,7 @@ include('reply.php');
     
 
 </head>
-<body style="font-family: 微軟正黑體;">
+<body style="font-family: 微軟正黑體; background-image: url(pic/restaurant_background.png)">
 
 
 <!-- https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_navbar_color&stacked=h -->
@@ -162,14 +163,16 @@ include('reply.php');
 <!-- jxiupart start -->
 <div class="container">
 
-    <div class="container" id="restaurantImg">
-        <img src="pic/food_category/pot.jpg" style="width: 80%">
+    <div class="col-sm-8" id="restaurantImg">
+        <?php
+            echo '<img src="rest_pic/'.$rid.'.jpg" style="width: 80%; box-shadow: 10px 10px 5px #aaaaaa;">';
+        ?>
     </div>
-
-    <div class="container" id="restaurantInfo">
+    
+    <div class="col-sm-4" id="restaurantInfo">
         <h4 style="text-align: center;">餐廳資訊</h4>
         <?php
-            $rid = $_GET['id'];
+            
             $select = mysqli_query($con, "SELECT *
                                         FROM restaurant
                                         WHERE restaurant.restaurant_id = $rid");
@@ -187,25 +190,23 @@ include('reply.php');
 <div class="container" style="clear: both;">
     <div style="clear: both;"><br/><br/></div>
     <!--以下之後為用php改寫-->
-    <div id="reply">
+    <div class="reply">
         <br/>
 
         <?php
-        // $rid = 1;
-            $select = mysqli_query($con, "SELECT *
-                                        FROM restaurant
-                                        WHERE restaurant.restaurant_id = $rid");
-            while($row = mysqli_fetch_assoc($select)){
-                echo "<h3>大家對於".$row['name']."的評價</h3>";
-            };
+            // print topic according to rid
+            replyTopic($rid);
+            // print content according to rid
+            replyContent($rid);
+
         ?>
 
-
+        <br/><br/>
         <p>2019/5/3 寫了一篇食記</p>
         <p>評分：4分</p>
         <p>我覺得超難吃，但飲料杯笑話很好笑，所以我給4分</p>
         <div class="like">Like!</div>
-        <img src="pic/food_category/dessert.jpg">
+        <img src="pic/food_category/dessert.jpg" style="width: 200px;">
     </div>
 </div>
 
