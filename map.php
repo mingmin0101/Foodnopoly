@@ -19,8 +19,6 @@ https://leafletjs.com/reference-1.4.0.html#map-example
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <!-- icon -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
     <!-- leaflet map api -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
       integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -212,7 +210,7 @@ https://leafletjs.com/reference-1.4.0.html#map-example
 <!-- 下面是右邊餐廳簡介======================================================================= -->
 
 <div id='restaurantInto'  style="height: 500px; width: 100%; overflow-y:scroll;">
-<h3 align=center style="background-color:#0A5D90; color:#FFFFFF">政大美食地圖</h3>
+<h3 align=center style="background-color:#ffbe02; color:#FFFFFF">政大美食地圖</h3>
 <div class="overflow-hidden">
 </div>
 
@@ -233,10 +231,13 @@ https://leafletjs.com/reference-1.4.0.html#map-example
 <?php
       $sth = $dbh->query('SELECT * from restaurant ORDER BY restaurant_id');
           while($row = $sth->fetch(PDO::FETCH_ASSOC)){
-              echo '<a href="restaurant.php?id='.$row['restaurant_id'].'"><p style="color: #0A5D90; font-size: 23px; margin-bottom:0">'.$row['name'].'</p></a>';
+
+              echo '<div class="row">><div class="col-sm-6"><a href="restaurant.php?id='.$row['restaurant_id'].'" ><p style="color: #ffbe02; font-size: 23px; margin-bottom:0">'.$row['name'].'</p></a>';
               echo '<p style="margin-bottom:0"><img src="pic/star.png">星級: '.$row['grade'].'</img></p>';
               echo '<p style="margin-bottom:0">今日營業: '.$row['open_hour'].'</p>';
-              echo '<p style="margin-bottom:0">'.$row['address'].'</p><hr>';
+              echo '<p style="margin-bottom:0">'.$row['address'].'</p></div>';
+              echo '<div class="col-sm-1"><img src="rest_pic/'.$row['restaurant_id'].'.jpg" width="180px" height="130px"></img></div></div>';
+              echo '<hr>';
           }
 
 ?>
