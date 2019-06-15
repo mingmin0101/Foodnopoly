@@ -165,22 +165,44 @@ https://leafletjs.com/reference-1.4.0.html#map-example
   <!-- https://ithelp.ithome.com.tw/articles/10208985 寫php傳值給javascript參考-->
   <?php
         // 用php從資料庫撈取餐廳資料
-        $sql1 = "SELECT * FROM restaurant";
-        $result1 = mysqli_query($con,$sql1);
-        $token = array();
-        $k=0;
-        while($row1 = mysqli_fetch_row($result1))
-        {
-          $name[$k] = $row1[1];
-          $category[$k] = $row1[2];
-          $longitude[$k] = $row1[3];
-          $latitude[$k] = $row1[4];
-          $address[$k] = $row1[5];
-          $grade[$k] = $row1[6];
-          $open_hour[$k] = $row1[8];
-          $k++;
-        }
-        // print_r($name); //印出array測試看看
+        // $ridd = $_GET['category'];
+        // echo $ridd;
+        // $result1 = mysqli_query($con,  "SELECT *
+        //                             FROM restaurant WHERE restaurant.category =  ");
+        //                   // WHERE restaurant.category = '$ridd'
+       $k=0;
+        if(isset($_GET['category'])){
+            $restaurant = $dbh->prepare('SELECT * from restaurant WHERE category = ?');
+            $restaurant->execute(array($_GET['category']));
+            while ($restaurantRow= $restaurant->fetch(PDO::FETCH_ASSOC)){
+                // echo $restaurantRow['name'];
+                $name[$k] = $restaurantRow['name'];
+                $category[$k] = $restaurantRow['category'];
+                $longitude[$k] = $restaurantRow['longitude'];
+                $latitude[$k] = $restaurantRow['latitude'];
+                $address[$k] = $restaurantRow['address'];
+                $grade[$k] = $restaurantRow['grade'];
+                $open_hour[$k] = $restaurantRow['open_hour'];
+                $k++;
+            }
+          }
+
+
+        // mysqli_fetch_row
+        // while($row1 = mysqli_fetch_assoc($result1))
+        // {
+        //   //   echo $ridd;
+        //   // echo "<h3>".$row1['name']."</h3></br>";
+        //   $name[$k] = $row1[1];
+        //   $category[$k] = $row1[2];
+        //   $longitude[$k] = $row1[3];
+        //   $latitude[$k] = $row1[4];
+        //   $address[$k] = $row1[5];
+        //   $grade[$k] = $row1[6];
+        //   $open_hour[$k] = $row1[8];
+        //   $k++;
+        // };
+        // // print_r($name); //印出array測試看看
   ?>
 
   <script>
@@ -229,7 +251,12 @@ https://leafletjs.com/reference-1.4.0.html#map-example
 
 <!-- 右邊餐廳簡介用php寫======================================================================= -->
 <?php
-      $sth = $dbh->query('SELECT * from restaurant ORDER BY restaurant_id');
+      // $sth = $dbh->query('SELECT * from restaurant ORDER BY restaurant_id');
+
+      if(isset($_GET['category'])){
+          $sth = $dbh->prepare('SELECT * from restaurant WHERE category = ?');
+          $sth->execute(array($_GET['category']));
+
           while($row = $sth->fetch(PDO::FETCH_ASSOC)){
 
               echo '<div class="row">><div class="col-sm-6"><a href="restaurant.php?id='.$row['restaurant_id'].'" ><p style="color: #ffbe02; font-size: 23px; margin-bottom:0">'.$row['name'].'</p></a>';
@@ -239,6 +266,7 @@ https://leafletjs.com/reference-1.4.0.html#map-example
               echo '<div class="col-sm-1"><img src="rest_pic/'.$row['restaurant_id'].'.jpg" width="180px" height="130px"></img></div></div>';
               echo '<hr>';
           }
+        }
 
 ?>
 
