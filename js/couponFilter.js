@@ -1,7 +1,8 @@
 filterSelection("all")
+var checkedCategories = [];
 function filter(c){
   var arr;
-  
+
 
 }
 

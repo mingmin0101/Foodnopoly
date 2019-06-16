@@ -1,0 +1,25 @@
+/* 選單 */
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: white;
+    background-color: #FFBE04;
+}
+.nav-pills a {
+    color: black;
+    text-decoration: none;
+    background-color: transparent;
+}
+.nav-pills a:hover {
+    color: #FFBE04;
+    text-decoration: none;
+}
+
+/* 修改會員資料 */
+td{
+    padding:4px 0px;
+    height:45px;
+}
+
+/* 點數紀錄 */
+.count { width: 20%; text-align: right;}
+.record { width: 60%;}
+.date { width: 20%; text-align: left;}
