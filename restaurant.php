@@ -39,7 +39,7 @@ $rid = $_GET['id'];
         display: none;
       }
     }
-    /* maggie rate style----------------------------------------------- */
+/* maggie rate style----------------------------------------------- */
     .fa {
       font-size: 25px;
     }
@@ -75,7 +75,7 @@ $rid = $_GET['id'];
       text-align: center;
       color: white;
     }
-    /* maggie rate style----------------------------------------------- */
+/* maggie rate style----------------------------------------------- */
 
     </style>
 
@@ -200,163 +200,164 @@ $rid = $_GET['id'];
 
 <!-- jxiupart start -->
 <div class="container">
+    <div class="row">
+        <div class="col-sm-8" id="restaurantImg">
+            <?php
+                echo '<img src="rest_pic/'.$rid.'.jpg" style="width: 80%; box-shadow: 10px 10px 5px #aaaaaa;">';
+            ?>
+        </div>
 
-    <div class="col-sm-8" id="restaurantImg">
-        <?php
-            echo '<img src="rest_pic/'.$rid.'.jpg" style="width: 80%; box-shadow: 10px 10px 5px #aaaaaa;">';
-        ?>
-    </div>
+        <div class="col-sm-4" id="restaurantInfo">
+            <h4 style="text-align: center;">餐廳資訊</h4>
+            <?php
 
-    <div class="col-sm-4" id="restaurantInfo">
-        <h4 style="text-align: center;">餐廳資訊</h4>
-        <?php
+                $select = mysqli_query($con, "SELECT *
+                                            FROM restaurant
+                                            WHERE restaurant.restaurant_id = $rid");
+                while($row = mysqli_fetch_assoc($select)){
+                    echo "<h3>".$row['name']."</h3></br>";
+                    // echo "<p> 評價：".$row['grade']."</p>";
+                    echo "<p> 類型：".$row['category']."</p>";
+                    echo "<p> 地址：".$row['address']."</p>";
+                    echo "<p> 電話：".$row['phone']."</p>";
+                    echo "<p> 營業時間：".$row['open_hour']."</p>";
+                };
+            ?>
 
-            $select = mysqli_query($con, "SELECT *
-                                        FROM restaurant
-                                        WHERE restaurant.restaurant_id = $rid");
-            while($row = mysqli_fetch_assoc($select)){
-                echo "<h3>".$row['name']."</h3></br>";
-                // echo "<p> 評價：".$row['grade']."</p>";
-                echo "<p> 類型：".$row['category']."</p>";
-                echo "<p> 地址：".$row['address']."</p>";
-                echo "<p> 電話：".$row['phone']."</p>";
-                echo "<p> 營業時間：".$row['open_hour']."</p>";
-            };
-        ?>
+            <!-- maggie rate================================================================================ -->
 
-<!-- maggie rate================================================================================ -->
+            <?php
+                $selectt = mysqli_query($con, "SELECT *
+                                            FROM reply
+                                            WHERE reply.restaurant_id = $rid");
+                $k=0;
+                $rateOne=0;
+                $rateTwo=0;
+                $rateThree=0;
+                $rateFour=0;
+                $rateFive=0;
+                while($roww = mysqli_fetch_assoc($selectt)){
+                $rates[$k] = $roww['rate'];
+                if($rates[$k] == 1){$rateOne+=1;};
+                if($rates[$k] == 2){$rateTwo+=1;};
+                if($rates[$k] == 3){$rateThree+=1;};
+                if($rates[$k] == 4){$rateFour+=1;};
+                if($rates[$k] == 5){$rateFive+=1;};
+                $k++;
+                };
+                $totalRater= count($rates);
+                $averageRate= array_sum($rates)/$totalRater;
+                // print_r($rates); //印出array測試看看
 
-<?php
-    $selectt = mysqli_query($con, "SELECT *
-                                FROM reply
-                                WHERE reply.restaurant_id = $rid");
-    $k=0;
-    $rateOne=0;
-    $rateTwo=0;
-    $rateThree=0;
-    $rateFour=0;
-    $rateFive=0;
-    while($roww = mysqli_fetch_assoc($selectt)){
-       $rates[$k] = $roww['rate'];
-       if($rates[$k] == 1){$rateOne+=1;};
-       if($rates[$k] == 2){$rateTwo+=1;};
-       if($rates[$k] == 3){$rateThree+=1;};
-       if($rates[$k] == 4){$rateFour+=1;};
-       if($rates[$k] == 5){$rateFive+=1;};
-       $k++;
-    };
-    $totalRater= count($rates);
-    $averageRate= array_sum($rates)/$totalRater;
-    // print_r($rates); //印出array測試看看
+                    echo "<span class='heading'>評價</span>";
+                    for($i=0 ; $i<round($averageRate) ; $i++ ){
+                        echo"  <span class='fa fa-star checked'></span>";
+                    }
+                    echo"<p>總平均評價 $averageRate 星級 - 根據 $totalRater 個用戶</p>";
+                // $rateFive/$totalRater
+                $bar5=  number_format($rateFive/$totalRater*100, 2).'%';
+                $bar4=  number_format($rateFour/$totalRater*100, 2).'%';
+                $bar3=  number_format($rateThree/$totalRater*100, 2).'%';
+                $bar2=  number_format($rateTwo/$totalRater*100, 2).'%';
+                $bar1=  number_format($rateOne/$totalRater*100, 2).'%';
+                    echo "
+                            <div class='side'>
+                            <div>5 星</div>
+                            </div>
+                            <div class='middle'>
+                            <div class='bar-container'>
+                                <div style='width: $bar5; height: 18px; background-color: #4CAF50;'></div>
+                            </div>
+                            </div>
+                            <div class='side right'>
+                    ";
+                // .bar-5 {width: 60%; height: 18px; background-color: #4CAF50;}
+                    echo "  <div>$rateFive</div> ";
+                    echo "
+                        </div>
+                            <div class='side'>
+                            <div>4 星</div>
+                            </div>
+                            <div class='middle'>
+                            <div class='bar-container'>
+                                <div style='width: $bar4; height: 18px; background-color: #2196F3;'></div>
+                            </div>
+                            </div>
+                            <div class='side right'>
+                    ";
+                    echo "  <div>$rateFour</div> ";
+                    echo "
+                            </div>
+                            <div class='side'>
+                                <div>3 星</div>
+                            </div>
+                            <div class='middle'>
+                                <div class='bar-container'>
+                                <div style='width: $bar3; height: 18px; background-color: #00bcd4;'></div>
 
-        echo "<span class='heading'>評價</span>";
-          for($i=0 ; $i<round($averageRate) ; $i++ ){
-            echo"  <span class='fa fa-star checked'></span>";
-          }
-        echo"<p>總平均評價 $averageRate 星級 - 根據 $totalRater 個用戶</p>";
-// $rateFive/$totalRater
-$bar5=  number_format($rateFive/$totalRater*100, 2).'%';
-$bar4=  number_format($rateFour/$totalRater*100, 2).'%';
-$bar3=  number_format($rateThree/$totalRater*100, 2).'%';
-$bar2=  number_format($rateTwo/$totalRater*100, 2).'%';
-$bar1=  number_format($rateOne/$totalRater*100, 2).'%';
-        echo "
-              <div class='row'>
-                <div class='side'>
-                  <div>5 star</div>
-                </div>
-                <div class='middle'>
-                  <div class='bar-container'>
-                    <div style='width: $bar5; height: 18px; background-color: #4CAF50;'></div>
-                  </div>
-                </div>
-                <div class='side right'>
-          ";
-// .bar-5 {width: 60%; height: 18px; background-color: #4CAF50;}
-          echo "  <div>$rateFive</div> ";
-          echo "
-              </div>
-                <div class='side'>
-                  <div>4 star</div>
-                </div>
-                <div class='middle'>
-                  <div class='bar-container'>
-                    <div style='width: $bar4; height: 18px; background-color: #2196F3;'></div>
-                  </div>
-                </div>
-                <div class='side right'>
-          ";
-          echo "  <div>$rateFour</div> ";
-          echo "
-                </div>
-                  <div class='side'>
-                    <div>3 star</div>
-                  </div>
-                  <div class='middle'>
-                    <div class='bar-container'>
-                      <div style='width: $bar3; height: 18px; background-color: #00bcd4;'></div>
+                                </div>
+                            </div>
+                            <div class='side right'>
+                    ";
+                    echo "  <div>$rateThree</div>";
+                    echo "
+                            </div>
+                            <div class='side'>
+                            <div>2 星</div>
+                            </div>
+                            <div class='middle'>
+                            <div class='bar-container'>
+                                <div style='width: $bar2; height: 18px; background-color: #ff9800;'></div>
+                            </div>
+                            </div>
+                            <div class='side right'>
+                    ";
+                    echo "  <div>$rateTwo</div>";
+                    echo "
+                            </div>
+                            <div class='side'>
+                            <div>1 星</div>
+                            </div>
+                            <div class='middle'>
+                            <div class='bar-container'>
+                                <div style='width: $bar1; height: 18px; background-color: #f44336;'></div>
+                            </div>
+                            </div>
+                            <div class='side right'>
+                    ";
+                    echo "<div>$rateOne</div>";
+                    echo "
+                            </div>
+                    ";
 
-                    </div>
-                  </div>
-                  <div class='side right'>
-          ";
-          echo "  <div>$rateThree</div>";
-          echo "
-                </div>
-                <div class='side'>
-                  <div>2 星</div>
-                </div>
-                <div class='middle'>
-                  <div class='bar-container'>
-                    <div style='width: $bar2; height: 18px; background-color: #ff9800;'></div>
-                  </div>
-                </div>
-                <div class='side right'>
-          ";
-          echo "  <div>$rateTwo</div>";
-          echo "
-                </div>
-                <div class='side'>
-                  <div>1 星</div>
-                </div>
-                <div class='middle'>
-                  <div class='bar-container'>
-                    <div style='width: $bar1; height: 18px; background-color: #f44336;'></div>
-                  </div>
-                </div>
-                <div class='side right'>
-          ";
-          echo "<div>$rateOne</div>";
-          echo "
-                </div>
-              </div>
-          ";
+            ?>
 
-?>
+            <!-- maggie rate================================================================================= -->
 
-<!-- maggie rate================================================================================= -->
-    </div>
-</div>
-<div class="container" style="clear: both;">
-    <div style="clear: both;"><br/><br/></div>
-    <!--以下之後為用php改寫-->
-    <div class="reply">
-        <br/>
+        </div>
+    </div>    
 
-        <?php
-            // print topic according to rid
-            replyTopic($rid);
-            // print content according to rid
-            replyContent($rid);
+    <div class="row">
+        <div style="clear: both;"><br/><br/><br/><br/></div>
+        <!--以下之後為用php改寫-->
+        <div class="col-sm-12">
+            <br/>
 
-        ?>
+            <?php
+                // print topic according to rid
+                replyTopic($rid);
+                // print content according to rid
+                replyContent($rid);
 
-        <br/><br/>
-        <p>2019/5/3 寫了一篇食記</p>
-        <p>評分：4分</p>
-        <p>我覺得超難吃，但飲料杯笑話很好笑，所以我給4分</p>
-        <div class="like">Like!</div>
-        <img src="pic/food_category/dessert.jpg" style="width: 200px;">
+            ?>
+
+            <br/><br/>
+            <p>2019/5/3 寫了一篇食記</p>
+            <p>評分：4分</p>
+            <p>我覺得超難吃，但飲料杯笑話很好笑，所以我給4分</p>
+            <div class="like">Like!</div>
+            <img src="pic/food_category/dessert.jpg" style="width: 200px;">
+        </div>
     </div>
 </div>
 
