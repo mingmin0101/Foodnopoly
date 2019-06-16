@@ -251,7 +251,7 @@ function closeModal(id) {
                     </tr>
                     <tr>
                         <td>電子郵件：</td>
-                        <td><input name="email" class="form-control" value="<?php echo $_SESSION['email_addr']?>"></td>
+                        <td><input name="email_addr" class="form-control" value="<?php echo $_SESSION['email_addr']?>"></td>
                     </tr>
                     <tr>
                         <td>密碼：</td>
@@ -270,7 +270,7 @@ function closeModal(id) {
                 <input type="submit" class="btn btn-warning" value="修改">                
             </form>
 
-            <?php echo $resultStr;?>     
+            <!-- <?php echo $resultStr;?>    -->  
         </div>
 
         <!-- 我的coupon頁面 -->
