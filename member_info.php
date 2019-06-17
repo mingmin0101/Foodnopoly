@@ -39,6 +39,33 @@ if(isset($_POST['realname']) && isset($_POST['nickname']) && isset($_POST['passw
         $resultStr = '密碼填寫錯誤';
     }
 }
+
+$whiteList = array('image/jpeg','image/png');
+// add coupon
+if(isset($_POST["add_coupon_rest"]) && isset($_POST["add_coupon_discount"]) && isset($_POST["add_coupon_details"]) && isset($_POST["add_coupon_date"]) && isset($_POST["add_coupon_cost"]) && isset($_FILES["add_coupon_file"])){
+
+    if(in_array($_FILES["add_coupon_file"]["type"], $whiteList)){
+        // 將上傳圖片重新命名
+        $image = $_FILES['add_coupon_file']['name']; // Get image name
+        $hash_fileneme = hash('sha256', basename($image).strtotime(date('Y-m-d H:i:s')));  //hash(名稱+時間)
+        
+        $target = "pic/barcode/".basename($image);  // image file directory
+        $target_path = "pic/barcode/".$hash_fileneme.".jpg";  // image file directory hashed
+
+        //將暫存區的檔案存到指定位置
+        move_uploaded_file($_FILES['add_coupon_file']['tmp_name'], $target_path);
+        
+        // insert一筆紀錄到 coupon
+        $newcoupon = $dbh->prepare('INSERT INTO coupon (restaurant_id, discount, details, `expiration date`, barcode, cost) VALUES (?, ?, ?, ?, ?, ?)');
+        $newcoupon->execute(array($_POST["add_coupon_rest"], $_POST["add_coupon_discount"], $_POST["add_coupon_details"], $_POST["add_coupon_date"], $target_path ,$_POST["add_coupon_cost"]));
+
+        echo '<meta http-equiv=REFRESH CONTENT=0;url=member_info.php>';
+    } else {
+        echo '<script>alert("圖片上傳格式有誤，請上傳jpg或png檔")</script>';
+    }
+    
+    
+  }
 ?>
 
 <html>
@@ -50,13 +77,15 @@ if(isset($_POST['realname']) && isset($_POST['nickname']) && isset($_POST['passw
     <link rel="stylesheet" href="styles/coupon.css">
     <link rel="stylesheet" href="styles/mycoupon.css">
     <link rel="stylesheet" href="styles/memberInfo.css">
+    <link rel="stylesheet" href="styles/addcoupon.css">
     <!-- js -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script src='js/sortTable.js'></script>
     <script src='js/mycoupon.js'></script>
-    <script src='js/coupon.js'></script>
+    <script src='js/coupon.js'></script>   
+    <script src='js/addcoupon.js'></script>
     
     <!-- coupon 輪軸 -->
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/assets/owl.carousel.min.css'>
@@ -230,32 +259,80 @@ if(isset($_POST['realname']) && isset($_POST['nickname']) && isset($_POST['passw
                 <div class="htmleaf-container">
                     <div class="container">
                         <div class="mhn-slide owl-carousel">
-            <?php
-            if (isset($_SESSION['account'])){   //有登入
-                $coupon = $dbh->query('SELECT * from coupon');  //撈出全部coupon
+<?php
+if (isset($_SESSION['account'])){   //有登入
+    $coupon = $dbh->query('SELECT * from coupon');  //撈出全部coupon
 
-                while($couponRow = $coupon->fetch(PDO::FETCH_ASSOC)){
-                    $restaurant = $dbh->prepare('SELECT * FROM restaurant WHERE restaurant_id = ?');
-                    $restaurant->execute(array($couponRow['restaurant_id']));
-                    $restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC);
-                    
-                    if(strtotime(date('Y-m-d H:i:s')) < strtotime($couponRow['expiration date'])){  //檢查有效期限
-                        echo '<div class="mhn-item filter_card '.$restaurantRow['category'].'"><div class="mhn-inner">
-                        <div class="mhn-img" style="background-image: url(rest_pic/'.$restaurantRow['restaurant_id'].'.jpg)"></div>
-                        <div class="mhn-text">
-                        <div class="row">
-                        <div class="col-sm-8"><h5 style="text-align: left;">'.$restaurantRow['name'].'</h5></div>
-                        <div class="col-sm-4"><h4 style="color: #FFBE04;">'.$couponRow['discount'].'折</h4></div>
-                        </div>
-                        <div class="row"><div class="col-sm-12"><p>'.$couponRow['details'].'</p></div></div>
-                        <div class="row"><div class="col-sm-12"><p>到期日 : '.$couponRow['expiration date'].'</p></div></div>
-                        <div class="row"><div class="col-sm-12"><p>點數 : '.$couponRow['cost'].'點</p></div></div>
-                        <button class="coupon_button" onclick="redeemCoupon('.$couponRow['id'].')" name="'.$couponRow['id'].'">兌 換</button>
-                        </div></div></div>';
-                    }                       
-                }
-            }
-            ?>
+    while($couponRow = $coupon->fetch(PDO::FETCH_ASSOC)){
+        $restaurant = $dbh->prepare('SELECT * FROM restaurant WHERE restaurant_id = ?');
+        $restaurant->execute(array($couponRow['restaurant_id']));
+        $restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC);
+        
+        if(strtotime(date('Y-m-d H:i:s')) < strtotime($couponRow['expiration date'])){  //檢查有效期限
+            echo '<div class="mhn-item filter_card '.$restaurantRow['category'].'"><div class="mhn-inner">
+            <div class="mhn-img" style="background-image: url(rest_pic/'.$restaurantRow['restaurant_id'].'.jpg)"></div>
+            <div class="mhn-text">
+            <div class="row">
+            <div class="col-sm-8"><h5 style="text-align: left;">'.$restaurantRow['name'].'</h5></div>
+            <div class="col-sm-4"><h4 style="color: #FFBE04;">'.$couponRow['discount'].'折</h4></div>
+            </div>
+            <div class="row"><div class="col-sm-12"><p>'.$couponRow['details'].'</p></div></div>
+            <div class="row"><div class="col-sm-12"><p>到期日 : '.$couponRow['expiration date'].'</p></div></div>
+            <div class="row"><div class="col-sm-12"><p>點數 : '.$couponRow['cost'].'點</p></div></div>
+            <button class="coupon_button" onclick="redeemCoupon('.$couponRow['id'].')" name="'.$couponRow['id'].'">兌 換</button>
+            </div></div></div>';
+        }  
+
+    }
+
+    $member = $dbh->prepare('SELECT * from member WHERE account = ?');  //找出目前登入的會員
+    $member->execute(array($_SESSION['account']));
+    $memberRow = $member->fetch(PDO::FETCH_ASSOC);
+    if ($memberRow['is_admin'] == 1){  //是管理員就可以新增coupon
+        echo '<div class="mhn-item filter_card"><div class="mhn-inner"><img src="pic/plus.png" style="height:387.33px; width:100%; cursor:default;" onclick="addCoupon()"></div></div></div>';
+        echo '<div id="addCouponModal" class="addCouponModalClass">
+                  <div class="modal-content-addCoupon">
+                    <span class="close" onclick="closeAddCouponModal()">&times;</span>
+                    <br><br>
+                    <div>
+                        <h4>新增coupon</h4><br>
+                        <form action="member_info.php" method="POST" enctype="multipart/form-data">
+                        <label for="add_coupon_rest">餐廳:</label>
+                        <select class="form-control" name="add_coupon_rest" id="add_coupon_rest">';
+
+                        $restaurant = $dbh->query('SELECT * from restaurant');  
+                        while($restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC)){
+                            echo '<option value="'.$restaurantRow['restaurant_id'].'">'.$restaurantRow['name'].'</option>';
+                        };
+
+        echo '</select><br>
+                        <label for="add_coupon_discount">折扣</label>
+                        <input type="number" name="add_coupon_discount" id="add_coupon_discount" class="form-control" min="1" max="100"><br>
+
+                        <label for="add_coupon_details">詳細說明</label>
+                        <input type="text" name="add_coupon_details" id="add_coupon_details" class="form-control"><br>
+
+                        <label for="add_coupon_date">有效期限</label>
+                        <input type="datetime-local" name="add_coupon_date" id="add_coupon_date" class="form-control" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}"><br>
+
+                        <label for="add_coupon_cost">兌換點數</label>
+                        <input type="number" name="add_coupon_cost" id="add_coupon_cost" class="form-control" min="1" max="100"><br>
+
+                        <label for="add_coupon_file">條碼</label>
+                        <input type="file" name="add_coupon_file" accept="image/png, image/jpeg">
+                        <br><br>
+                        <button class="btn btn-warning" style="float:right;" >新 增</button>
+
+                        </form>
+                    <br>
+                    </div>
+                  </div>
+                </div>
+                <div>';
+
+    }
+}
+?>
 <script type="text/javascript">
 // coupon redeem
 function redeemCoupon(ID) {

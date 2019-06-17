@@ -25,6 +25,7 @@ else if(isset($_POST['login_account']) && isset($_POST['login_password'])){
             $_SESSION['realname'] = $row['realname'];
             $_SESSION['email_addr'] = $row['email_addr'];
             $_SESSION['point'] = $row['point'];
+            $_SESSION['member_id'] = $row['id'];
 
             echo '<meta http-equiv=REFRESH CONTENT=0;url=index.php>';  
         }
