@@ -46,9 +46,23 @@ else if(isset($_POST['name']) && isset($_POST['nickname']) && isset($_POST['acco
                     hash('sha256',$_POST['password']),
                     $_POST['email'],
                 ));
-            echo '<meta http-equiv=REFRESH CONTENT=0;url=member.php>'; 
+        } 
+        // 挑選出member資料 撈取id
+        $member = $dbh->prepare('SELECT * from member WHERE account = ?');  
+        $member->execute(array($_POST['account']));
+        $memberRow = $member->fetch(PDO::FETCH_ASSOC);
 
-        }  
+        // 首次加入會員 新增200點
+        $newpointrecord = $dbh->prepare('INSERT INTO pointrecord (member_id, point_in, record) VALUES (?, ?, ?)');
+        $record = "新加入會員禮";
+        $newpointrecord->execute(array($memberRow['id'], 200, $record)); 
+
+        // update 該會員的 total point
+        $memberUpdatePoint = $dbh->prepare('UPDATE member SET point = 200 WHERE id = ?');
+        $memberUpdatePoint->execute(array($memberRow["id"]));
+        
+        echo '<meta http-equiv=REFRESH CONTENT=0;url=member.php>';
+
     } else {
         $failStr = '帳號重複or輸入不正確，未成功註冊';
     } 
