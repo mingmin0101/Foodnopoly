@@ -19,6 +19,9 @@ https://leafletjs.com/reference-1.4.0.html#map-example
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <!-- Font Awesome Icon Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
     <!-- leaflet map api -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
       integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
@@ -49,6 +52,15 @@ https://leafletjs.com/reference-1.4.0.html#map-example
         display: none;
       }
     }
+    /* maggie rate style----------------------------------------------- */
+        .fa {
+          font-size: 25px;
+        }
+        .checked {
+          color: orange;
+        }
+
+    /* maggie rate style----------------------------------------------- */
 
     </style>
 
@@ -134,8 +146,6 @@ https://leafletjs.com/reference-1.4.0.html#map-example
     </nav>
 
 
-
-
     <div class="container-fluid">
 
     <div id='mapView' class="row">
@@ -147,8 +157,6 @@ https://leafletjs.com/reference-1.4.0.html#map-example
 
       <div class="col-sm-4" style="padding: 5px">
         <br><br><br>
-
-
 
 
 <!-- 下面是map======================================================================= -->
@@ -183,10 +191,10 @@ https://leafletjs.com/reference-1.4.0.html#map-example
                 $address[$k] = $restaurantRow['address'];
                 $grade[$k] = $restaurantRow['grade'];
                 $open_hour[$k] = $restaurantRow['open_hour'];
+                $id[$k] = $restaurantRow['restaurant_id'];
                 $k++;
             }
           }
-
 
         // mysqli_fetch_row
         // while($row1 = mysqli_fetch_assoc($result1))
@@ -214,17 +222,24 @@ https://leafletjs.com/reference-1.4.0.html#map-example
        var address = <?php echo json_encode($address); ?>;
        var grade = <?php echo json_encode($grade); ?>;
        var open_hour = <?php echo json_encode($open_hour); ?>;
+       var id = <?php echo json_encode($id); ?>;
 
+       var redIcon = new L.Icon({
+       	iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+       	shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+       	iconSize: [25, 41],
+       	iconAnchor: [12, 41],
+       	popupAnchor: [1, -34],
+       	shadowSize: [41, 41]
+       });
+
+       var functionName = new Array(rest_name.length);
        for(var i=0; i<rest_name.length ;i++){
-        L.marker([longitude[i], latitude[i]]).addTo(map)
-            .bindPopup('<strong>'+rest_name[i]+'</strong><br>'+ category[i]+'<br>'+address[i]+'<br>'+open_hour[i])
+        L.marker([longitude[i], latitude[i]], {icon: redIcon})
+            // .on('click',function() { alert('Clicked on a member of '+i); })
+            .bindPopup('<a href=#restaurant'+id[i]+'><strong>'+rest_name[i]+'</strong></a><br>'+ category[i]+'<br>'+address[i]+'<br>'+open_hour[i])
             .openPopup()
-            // .on('click', onClick);
-        }
-
-        function onClick(e){
-            alert(this.getLatLng());
-            document.getElementBiId('intro').value = '餐廳簡介在這裡';
+            .addTo(map);
         }
 
     </script>
@@ -259,8 +274,26 @@ https://leafletjs.com/reference-1.4.0.html#map-example
 
           while($row = $sth->fetch(PDO::FETCH_ASSOC)){
 
-              echo '<div class="row">><div class="col-sm-6"><a href="restaurant.php?id='.$row['restaurant_id'].'" ><p style="color: #ffbe02; font-size: 23px; margin-bottom:0">'.$row['name'].'</p></a>';
-              echo '<p style="margin-bottom:0"><img src="pic/star.png">星級: '.$row['grade'].'</img></p>';
+              echo '<div class="row" id="restaurant'.$row['restaurant_id'].'">><div class="col-sm-6"><a href="restaurant.php?id='.$row['restaurant_id'].'" ><p style="color: #ffbe02; font-size: 23px; margin-bottom:0">'.$row['name'].'</p></a>';
+               // maggie rate================================================================================
+                      $rate = $row['grade'];
+                      echo "<span>星級:</span>";
+                      // echo "$row['grade']";
+                      if($rate==0){
+                        for($j=0 ; $j<5 ; $j++ ){
+                            echo " <span class='fa fa-star'></span>";
+                        }
+                      }else{
+                          for($i=0 ; $i<round($rate) ; $i++ ){
+                              echo" <span class='fa fa-star checked'></span>";
+                              if($i==round($rate)-1){
+                                for($j=0 ; $j<5-round($rate) ; $j++ ){
+                                    echo " <span class='fa fa-star'></span>";
+                                }
+                              }
+                          }
+                      }
+             // maggie rate=================================================================================
               echo '<p style="margin-bottom:0">今日營業: '.$row['open_hour'].'</p>';
               echo '<p style="margin-bottom:0">'.$row['address'].'</p></div>';
               echo '<div class="col-sm-1"><img src="rest_pic/'.$row['restaurant_id'].'.jpg" width="180px" height="130px"></img></div></div>';

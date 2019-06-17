@@ -305,7 +305,7 @@ else if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST[
                 };
             ?>
 
-            <!-- maggie rate================================================================================ -->
+                        <!-- maggie rate================================================================================ -->
 
             <?php
                 $selectt = mysqli_query($con, "SELECT *
@@ -328,6 +328,12 @@ else if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST[
                 };
                 $totalRater= count($rates);
                 $averageRate= array_sum($rates)/$totalRater;
+
+                //更新grade
+                $restUpdateRate = $dbh->prepare('UPDATE restaurant SET grade = '.round($averageRate,1).' WHERE restaurant_id = ?');
+                $restUpdateRate->execute(array($rid));
+
+
                 // print_r($rates); //印出array測試看看
 
                     echo "<span class='heading'>評價</span>";
