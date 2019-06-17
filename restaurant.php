@@ -5,6 +5,26 @@ include('reply.php');
 $rid = $_GET['id'];
 ?>
 
+<?php
+if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST['rate'])){
+    $rid = $_GET['id'];
+    $mid = $_SESSION['member_id'];
+    $imid = 0;
+    $replier = $_SESSION['nickname'];
+    $content = nl2br(addslashes($_POST['content']));
+    $imgContent = 0;
+    $rate = $_POST['rate'];
+    
+
+    $insert = mysqli_query($con, "INSERT INTO reply (`restaurant_id`, `member_id`, `image_id`, `replier`, `content`, `img_content`, `rate`, `date_posted`) 
+                                  VALUES ('".$rid."', '".$mid."', '".$imid."', '".$replier."', '".$content."', '".$imgContent."', '".$rate."', NOW());");
+    
+    // if($insert){
+    //     // header("Location: /test2.php?id=".$rid."");
+    // }
+}
+?>
+
 <html>
 <head>
     <title>大Food翁</title>
@@ -337,7 +357,7 @@ $rid = $_GET['id'];
         </div>
     </div>    
 
-    <div class="row">
+    <div class="row" id="reply">
         <div style="clear: both;"><br/><br/><br/><br/></div>
         <!--以下之後為用php改寫-->
         <div class="col-sm-12">
@@ -350,13 +370,38 @@ $rid = $_GET['id'];
                 replyContent($rid);
 
             ?>
-
+            <!--
             <br/><br/>
             <p>2019/5/3 寫了一篇食記</p>
             <p>評分：4分</p>
             <p>我覺得超難吃，但飲料杯笑話很好笑，所以我給4分</p>
             <div class="like">Like!</div>
             <img src="pic/food_category/dessert.jpg" style="width: 200px;">
+            -->
+
+            <div class="col-sm-4" id="reply_form">
+                <?php
+                    if(isset($_SESSION['account'])){
+                        echo "<form action='test2.php?id=".$_GET['id']."' method='POST'>
+                            
+                                <h5>留下你的評論吧！</h5>
+                                <p>評價： </p>
+                                    <select name='rate'>
+                                        <option value='1'>1分</option>
+                                        <option value='2'>2分</option>
+                                        <option value='3' selected>3分</option>
+                                        <option value='4'>4分</option>
+                                        <option value='5'>5分</option>
+                                    </select>
+                                <textarea id='content' name='content' placeholder='說點什麼'></textarea><br/>
+                                <input type='submit' value='留言' /> 
+                            </form>";
+                     }
+                    else{
+                        echo "<p>要先登入才能留言喔！ 或是 <a href='member.php'> 按這裡 </a> 註冊！ </p>";
+                    }
+                ?>
+            </div>
         </div>
     </div>
 </div>
