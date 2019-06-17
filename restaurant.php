@@ -6,22 +6,83 @@ $rid = $_GET['id'];
 ?>
 
 <?php
-if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST['rate'])){
-    $rid = $_GET['id'];
-    $mid = $_SESSION['member_id'];
-    $imid = 0;
-    $replier = $_SESSION['nickname'];
-    $content = nl2br(addslashes($_POST['content']));
-    $imgContent = 0;
-    $rate = $_POST['rate'];
-    
+$whiteList = array('image/jpeg','image/png');
 
-    $insert = mysqli_query($con, "INSERT INTO reply (`restaurant_id`, `member_id`, `image_id`, `replier`, `content`, `img_content`, `rate`, `date_posted`) 
-                                  VALUES ('".$rid."', '".$mid."', '".$imid."', '".$replier."', '".$content."', '".$imgContent."', '".$rate."', NOW());");
-    
-    // if($insert){
-    //     // header("Location: /test2.php?id=".$rid."");
-    // }
+if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST['rate']) && isset($_FILES['image']) && $_FILES['image']['name'] != NULL){
+    if(in_array($_FILES["image"]["type"], $whiteList)){
+        $rid = $_GET['id'];
+        $mid = $_SESSION['member_id'];
+        $replier = $_SESSION['nickname'];
+        $content = nl2br(addslashes($_POST['content']));
+        // $imgContent = 0;
+        $rate = $_POST['rate'];
+
+
+        // file upload
+        $msg= "";
+        $image = $_FILES['image']['name'];
+        $hash_fileneme = hash('sha256', basename($image).strtotime(date('Y-m-d H:i:s')));  //hash(名稱+時間)
+        $target = "test/".$hash_fileneme.".jpg";
+        
+        $insert = mysqli_query($con, "INSERT INTO reply (`restaurant_id`, `member_id`, `replier`, `content`, `img_content`, `rate`, `date_posted`) 
+                                    VALUES ('".$rid."', '".$mid."', '".$replier."', '".$content."', '".$hash_fileneme.".jpg', '".$rate."', NOW());");
+        
+        $restaurant = $dbh->prepare('SELECT * from restaurant WHERE restaurant_id = ?');  
+        $restaurant->execute(array($rid));
+        $restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC);
+
+        // pointrecord insert 一筆新紀錄 
+        $newpointrecord = $dbh->prepare('INSERT INTO pointrecord (member_id, point_in, record) VALUES (?, ?, ?)');
+        $record = "發表評論 (".$restaurantRow['name'].", ".$content.")";
+        $newpointrecord->execute(array($_SESSION['member_id'], 5, $record));
+
+        // 找出該會員的point紀錄
+        $member = $dbh->prepare('SELECT SUM(point_in) AS total_point_in, SUM(point_out) AS total_point_out from pointrecord WHERE member_id = ?');  
+        $member->execute(array($_SESSION['member_id']));
+        $memberRow = $member->fetch(PDO::FETCH_ASSOC);
+
+        // update 該會員的 total point
+        $total_point = $memberRow['total_point_in'] - $memberRow['total_point_out'];
+        $memberUpdatePoint = $dbh->prepare('UPDATE member SET point = '.$total_point.' WHERE id = ?');
+        $memberUpdatePoint->execute(array($_SESSION['member_id']));
+        move_uploaded_file($_FILES['image']['tmp_name'], $target);  
+    }
+    else
+    {
+        echo '<script>alert("圖片上傳格式有誤，只能上傳.jpeg or .png")</script>';
+    }
+}
+else if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST['rate'])){
+        $rid = $_GET['id'];
+        $mid = $_SESSION['member_id'];
+        $replier = $_SESSION['nickname'];
+        $content = nl2br(addslashes($_POST['content']));
+        // $imgContent = 0;
+        $rate = $_POST['rate'];
+
+        $insert = mysqli_query($con, "INSERT INTO reply (`restaurant_id`, `member_id`, `replier`, `content`, `img_content`, `rate`, `date_posted`) 
+                                    VALUES ('".$rid."', '".$mid."', '".$replier."', '".$content."', 0, '".$rate."', NOW());");
+        
+        
+        $restaurant = $dbh->prepare('SELECT * from restaurant WHERE restaurant_id = ?');  
+        $restaurant->execute(array($rid));
+        $restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC);
+
+        // pointrecord insert 一筆新紀錄 
+        $newpointrecord = $dbh->prepare('INSERT INTO pointrecord (member_id, point_in, record) VALUES (?, ?, ?)');
+        $record = "發表評論 (".$restaurantRow['name'].", ".$content.")";
+        $newpointrecord->execute(array($_SESSION['member_id'], 5, $record));
+
+        // 找出該會員的point紀錄
+        $member = $dbh->prepare('SELECT SUM(point_in) AS total_point_in, SUM(point_out) AS total_point_out from pointrecord WHERE member_id = ?');  
+        $member->execute(array($_SESSION['member_id']));
+        $memberRow = $member->fetch(PDO::FETCH_ASSOC);
+
+        // update 該會員的 total point
+        $total_point = $memberRow['total_point_in'] - $memberRow['total_point_out'];
+        $memberUpdatePoint = $dbh->prepare('UPDATE member SET point = '.$total_point.' WHERE id = ?');
+        $memberUpdatePoint->execute(array($_SESSION['member_id']));
+
 }
 ?>
 
@@ -382,19 +443,31 @@ if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST['rate
             <div class="col-sm-4" id="reply_form">
                 <?php
                     if(isset($_SESSION['account'])){
-                        echo "<form action='test2.php?id=".$_GET['id']."' method='POST'>
-                            
-                                <h5>留下你的評論吧！</h5>
-                                <p>評價： </p>
-                                    <select name='rate'>
+                        echo "<form action='restaurant.php?id=".$_GET['id']."' method='POST' enctype='multipart/form-data'>
+
+                                <div class='form-group'>
+                                    <h5>留下你的評論吧！</h5>
+                                </div>
+                                <div class='form-group'>
+                                    <label for='rate'>評價：</label>
+                                    <select id='rate' name='rate' class='form-control'>
                                         <option value='1'>1分</option>
                                         <option value='2'>2分</option>
                                         <option value='3' selected>3分</option>
                                         <option value='4'>4分</option>
                                         <option value='5'>5分</option>
                                     </select>
-                                <textarea id='content' name='content' placeholder='說點什麼'></textarea><br/>
-                                <input type='submit' value='留言' /> 
+                                </div>
+                                <div class='form-group'>
+                                    <label for='content'></label>
+                                    <textarea class='form-control' id='content' name='content' row='4' placeholder='說點什麼'></textarea><br/>
+                                </div>
+                                <div class='form-group'>
+                                    <input class='form-control-file' type='file' name='image' accept='image/png, image/jpeg'/>
+                                </div>
+                                <div class='form-group'>
+                                    <button class='btn btn-primary' type='submit' value='留言' >留言</button> 
+                                </div>
                             </form>";
                      }
                     else{
