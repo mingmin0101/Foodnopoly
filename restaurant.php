@@ -122,11 +122,8 @@ if(isset($_GET['del']) && isset($_SESSION['account'])){
 <head>
     <title>大Food翁</title>
     <meta charset="utf-8">
-    <!-- bootstrap -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <!-- <link rel="stylesheet" href="styles/jxiu.css">   jxiu 需要的css -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     
@@ -136,58 +133,12 @@ if(isset($_GET['del']) && isset($_SESSION['account'])){
     <!-- css, js -->
     <link rel="stylesheet" type="text/css" href="styles/chatroom.css">
     <link rel="stylesheet" type="text/css" href="styles/index.css">
+    <link rel="stylesheet" type="text/css" href="styles/maggie.css">
+    <!-- <link rel="stylesheet" type="text/css" href="styles/jxiu.css"> -->
     <script src="js/chatroom.js"></script>
-
-
-    <style>
-    
-/* maggie rate style----------------------------------------------- */
-    .fa {
-      font-size: 25px;
-    }
-    .checked {
-      color: orange;
-    }
-    /* Three column layout */
-    .side {
-      float: left;
-      width: 15%;
-      margin-top:10px;
-    }
-    .middle {
-      margin-top:10px;
-      float: left;
-      width: 70%;
-    }
-
-    /* Place text to the right */
-    .right {
-      text-align: right;
-    }
-    /* Clear floats after the columns */
-    .rowrate:after {
-      content: "";
-      display: table;
-      clear: both;
-    }
-    /* The bar container */
-    .bar-container {
-      width: 100%;
-      background-color: #f1f1f1;
-      text-align: center;
-      color: white;
-    }
-/* maggie rate style----------------------------------------------- */
-
-    </style>
-
-
-
-
 
 </head>
 <body style="font-family: 微軟正黑體; background-image: url(pic/restaurant_background.png)">
-
 
 <!-- https://www.w3schools.com/bootstrap4/tryit.asp?filename=trybs_navbar_color&stacked=h -->
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
@@ -231,7 +182,6 @@ if(isset($_GET['del']) && isset($_SESSION['account'])){
         <div class="col-sm-6" id="restaurantInfo" style="vertical-align: middle;">
             <br>
             <?php
-
                 $select = mysqli_query($con, "SELECT *
                                             FROM restaurant
                                             WHERE restaurant.restaurant_id = $rid");
@@ -248,28 +198,26 @@ if(isset($_GET['del']) && isset($_SESSION['account'])){
 
 
     </div>
+
     <br><br>
     <hr>
     <br>
+
     <div class="row" id="reply">
         <div style="clear: both;"><br/><br/><br/><br/></div>
         <!--以下之後為用php改寫-->
         <div class="col-sm-8" id="reply_form">
 
             <?php
-                // print topic according to rid
-                // replyTopic($rid);
-
+                // print topic
                 $select = mysqli_query($con, "SELECT *
                                       FROM restaurant
                                       WHERE restaurant_id = $rid");
                 while($row = mysqli_fetch_assoc($select)){
                     echo "<h4>大家對於 <b>".$row['name']."</b> 的評價</h4><br>";
                 }
-                // print content according to rid
-                // replyContent($rid);
 
-
+                // print content
                 $select = mysqli_query($con, "SELECT *
                                       FROM   reply
                                       WHERE  restaurant_id = $rid");
@@ -298,8 +246,6 @@ if(isset($_GET['del']) && isset($_SESSION['account'])){
                         }
                         echo "<p style='margin:0px;'>".$row['content']."</p>";
 
-
-
                         if(isset($_SESSION['account'])){  //有登入
                             $member->execute(array($_SESSION['account']));  //目前登入的會員
                             while ($memberRow= $member->fetch(PDO::FETCH_ASSOC)) {
@@ -311,8 +257,6 @@ if(isset($_GET['del']) && isset($_SESSION['account'])){
                         echo '</div></div><br>';
                     }
                 }
-
-        ////
 
                 if(isset($_SESSION['account'])){
                     echo "<br><form action='restaurant.php?id=".$_GET['id']."' method='POST' enctype='multipart/form-data'>
@@ -349,9 +293,9 @@ if(isset($_GET['del']) && isset($_SESSION['account'])){
             </div>
             <div class="col-sm-4">
                 <br>
-                        <!-- maggie rate====================================================================== -->
-
+            
             <?php
+            // maggie rate======================================================================
                 $selectt = mysqli_query($con, "SELECT *
                                             FROM reply
                                             WHERE reply.restaurant_id = $rid");
@@ -482,36 +426,37 @@ if(isset($_GET['del']) && isset($_SESSION['account'])){
                     ";
              }
             ?>
-
-<!-- maggie rate============================================================================= -->
        
             </div>
         
     </div>
 </div>
 
-<!--jxiupart end-->
+<?php
+// 聊天視窗  有登入才可以使用 ===================================================================================
+    if(isset($_SESSION['account']) && $_SESSION['account'] != null){
+        echo '<img id="chat_icon" src="pic/chat_icon.png" style="height: 80px; width: 80px; position: fixed; bottom: 30px; right: 35px;z-index:10;" onclick="this.style.display=\'none\';getElementById(\'close_icon\').style.display=\'block\';getElementById(\'chatroom\').style.display=\'block\';" >
+            <img id="close_icon" src="pic/close.png" style="height: 90px; width: 90px; position: fixed; bottom: 25px; right: 30px; display: none;z-index:10;" onclick="this.style.display=\'none\';getElementById(\'chat_icon\').style.display=\'block\';getElementById(\'chatroom\').style.display=\'none\';" >';
 
-
-
-<div id='chatroom' class="container" style="position: fixed; right:30px; bottom: 100px; height:400px; width: 400px; display: none; z-index:10;">
-    <div class="card">
-        <div class="card-header bg-dark text-white">聊天室</div>
-        <div class="card-body">
-            <table>
-                <tr><td><textarea id="showMsgHere" disabled="disabled"></textarea></td></tr>
-                <tr><td>
-                    <form>
-                        <!-- <input type="text" id="nickname" placeholder="暱稱" style="width:5em;height:2em"> -->
-                        <input type="text" id="msg" placeholder="訊息" style="width:100%;height:2em">
-                        <input type="button" value="送出" onclick="sendMsg();">
-                    </form>
-                </td></tr>
-            </table>
-        </div>
-    </div>
-</div>
-
+        echo '<div id="chatroom" class="container" style="position: fixed; right:30px; bottom: 135px; height:400px; width: 430px; display: none; z-index:12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">聊天室</div>
+                    <div class="card-body">
+                        <table>
+                            <tr><td><textarea id="showMsgHere" disabled="disabled"></textarea></td></tr>
+                            <tr><td>
+                                <form>
+                                    <input type="text" id="msg" placeholder="訊息" style="width:100%;height:2em">
+                                    <input type="button" value="送出" onclick="sendMsg();">
+                                </form>
+                            </td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            ';
+    }
+?>
 
 </body>
 </html>

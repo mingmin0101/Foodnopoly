@@ -40,9 +40,9 @@ if(isset($_POST['realname']) && isset($_POST['nickname']) && isset($_POST['passw
     }
 }
 
-$whiteList = array('image/jpeg','image/png');
 // add coupon
-if(isset($_POST["add_coupon_rest"]) && isset($_POST["add_coupon_discount"]) && isset($_POST["add_coupon_details"]) && isset($_POST["add_coupon_date"]) && isset($_POST["add_coupon_cost"]) && isset($_FILES["add_coupon_file"])){
+$whiteList = array('image/jpeg','image/png');
+if(isset($_POST["add_coupon_rest"]) && isset($_POST["add_coupon_discount"]) && isset($_POST["add_coupon_details"]) && isset($_POST["add_coupon_date"]) && isset($_POST["add_coupon_cost"]) && isset($_FILES["add_coupon_file"]) && $_FILES["add_coupon_file"]["name"]!=NULL){
 
     if(in_array($_FILES["add_coupon_file"]["type"], $whiteList)){
         // 將上傳圖片重新命名
@@ -63,9 +63,9 @@ if(isset($_POST["add_coupon_rest"]) && isset($_POST["add_coupon_discount"]) && i
     } else {
         echo '<script>alert("圖片上傳格式有誤，請上傳jpg或png檔")</script>';
     }
-    
-    
-  }
+       
+}
+
 ?>
 
 <html>
@@ -141,7 +141,7 @@ if(isset($_POST["add_coupon_rest"]) && isset($_POST["add_coupon_discount"]) && i
 
 <!-- Tab panes -->
 <div class="tab-content">
-    <!-- 修改會員資料頁面 -->
+    <!-- 修改會員資料頁面===================================================================== -->
     <div class="tab-pane container active" id="modifyInfo">
         <br>
         <form action="<?php echo basename($_SERVER['PHP_SELF']);?>" method="POST">  
@@ -181,12 +181,10 @@ if(isset($_POST["add_coupon_rest"]) && isset($_POST["add_coupon_discount"]) && i
             </table>
             <br>
             <input type="submit" class="btn btn-warning" value="修改">                
-        </form>
-
-        <!-- <?php echo $resultStr;?>    -->  
+        </form> 
     </div>
 
-    <!-- 我的coupon頁面 -->
+    <!-- 我的coupon頁面===================================================================== -->
     <div class="tab-pane container fade" id="myCoupon">
         <br>
         <div class="container mt-3">
@@ -250,7 +248,7 @@ if(isset($_POST["add_coupon_rest"]) && isset($_POST["add_coupon_discount"]) && i
     </div>
 
 
-    <!-- 兌換coupon頁面 -->
+    <!-- 兌換coupon頁面===================================================================== -->
     <div class="tab-pane container fade" id="coupon">
         <br><br>
         
@@ -259,116 +257,81 @@ if(isset($_POST["add_coupon_rest"]) && isset($_POST["add_coupon_discount"]) && i
                 <div class="htmleaf-container">
                     <div class="container">
                         <div class="mhn-slide owl-carousel">
-<?php
-if (isset($_SESSION['account'])){   //有登入
-    $coupon = $dbh->query('SELECT * from coupon');  //撈出全部coupon
+            <?php
+            if (isset($_SESSION['account'])){   //有登入
+                $coupon = $dbh->query('SELECT * from coupon');  //撈出全部coupon
 
-    while($couponRow = $coupon->fetch(PDO::FETCH_ASSOC)){
-        $restaurant = $dbh->prepare('SELECT * FROM restaurant WHERE restaurant_id = ?');
-        $restaurant->execute(array($couponRow['restaurant_id']));
-        $restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC);
-        
-        if(strtotime(date('Y-m-d H:i:s')) < strtotime($couponRow['expiration date'])){  //檢查有效期限
-            echo '<div class="mhn-item filter_card '.$restaurantRow['category'].'"><div class="mhn-inner">
-            <div class="mhn-img" style="background-image: url(rest_pic/'.$restaurantRow['restaurant_id'].'.jpg)"></div>
-            <div class="mhn-text">
-            <div class="row">
-            <div class="col-sm-8"><h5 style="text-align: left;">'.$restaurantRow['name'].'</h5></div>
-            <div class="col-sm-4"><h4 style="color: #FFBE04;">'.$couponRow['discount'].'折</h4></div>
-            </div>
-            <div class="row"><div class="col-sm-12"><p>'.$couponRow['details'].'</p></div></div>
-            <div class="row"><div class="col-sm-12"><p>到期日 : '.$couponRow['expiration date'].'</p></div></div>
-            <div class="row"><div class="col-sm-12"><p>點數 : '.$couponRow['cost'].'點</p></div></div>
-            <button class="coupon_button" onclick="redeemCoupon('.$couponRow['id'].')" name="'.$couponRow['id'].'">兌 換</button>
-            </div></div></div>';
-        }  
+                while($couponRow = $coupon->fetch(PDO::FETCH_ASSOC)){
+                    $restaurant = $dbh->prepare('SELECT * FROM restaurant WHERE restaurant_id = ?');
+                    $restaurant->execute(array($couponRow['restaurant_id']));
+                    $restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC);
+                    
+                    if(strtotime(date('Y-m-d H:i:s')) < strtotime($couponRow['expiration date'])){  //檢查有效期限
+                        echo '<div class="mhn-item filter_card '.$restaurantRow['category'].'"><div class="mhn-inner">
+                        <div class="mhn-img" style="background-image: url(rest_pic/'.$restaurantRow['restaurant_id'].'.jpg)"></div>
+                        <div class="mhn-text">
+                        <div class="row">
+                        <div class="col-sm-8"><h5 style="text-align: left;">'.$restaurantRow['name'].'</h5></div>
+                        <div class="col-sm-4"><h4 style="color: #FFBE04;">'.$couponRow['discount'].'折</h4></div>
+                        </div>
+                        <div class="row"><div class="col-sm-12"><p>'.$couponRow['details'].'</p></div></div>
+                        <div class="row"><div class="col-sm-12"><p>到期日 : '.$couponRow['expiration date'].'</p></div></div>
+                        <div class="row"><div class="col-sm-12"><p>點數 : '.$couponRow['cost'].'點</p></div></div>
+                        <button class="coupon_button" onclick="redeemCoupon('.$couponRow['id'].')" name="'.$couponRow['id'].'">兌 換</button>
+                        </div></div></div>';
+                    }  
 
-    }
+                }
 
-    $member = $dbh->prepare('SELECT * from member WHERE account = ?');  //找出目前登入的會員
-    $member->execute(array($_SESSION['account']));
-    $memberRow = $member->fetch(PDO::FETCH_ASSOC);
-    if ($memberRow['is_admin'] == 1){  //是管理員就可以新增coupon
-        echo '<div class="mhn-item filter_card"><div class="mhn-inner"><img src="pic/plus.png" style="height:387.33px; width:100%; cursor:default;" onclick="addCoupon()"></div></div></div>';
-        echo '<div id="addCouponModal" class="addCouponModalClass">
-                  <div class="modal-content-addCoupon">
-                    <span class="close" onclick="closeAddCouponModal()">&times;</span>
-                    <br><br>
-                    <div>
-                        <h4>新增coupon</h4><br>
-                        <form action="member_info.php" method="POST" enctype="multipart/form-data">
-                        <label for="add_coupon_rest">餐廳:</label>
-                        <select class="form-control" name="add_coupon_rest" id="add_coupon_rest">';
+                $member = $dbh->prepare('SELECT * from member WHERE account = ?');  //找出目前登入的會員
+                $member->execute(array($_SESSION['account']));
+                $memberRow = $member->fetch(PDO::FETCH_ASSOC);
+                if ($memberRow['is_admin'] == 1){  //是管理員就可以新增coupon
+                    echo '<div class="mhn-item filter_card"><div class="mhn-inner"><img src="pic/plus.png" style="height:387.33px; width:100%; cursor:default;" onclick="addCoupon()"></div></div></div>';
+                    echo '<div id="addCouponModal" class="addCouponModalClass">
+                              <div class="modal-content-addCoupon">
+                                <span class="close" onclick="closeAddCouponModal()">&times;</span>
+                                <br><br>
+                                <div>
+                                    <h4>新增coupon</h4><br>
+                                    <form action="member_info.php" method="POST" enctype="multipart/form-data">
+                                    <label for="add_coupon_rest">餐廳:</label>
+                                    <select class="form-control" name="add_coupon_rest" id="add_coupon_rest">';
 
-                        $restaurant = $dbh->query('SELECT * from restaurant');  
-                        while($restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC)){
-                            echo '<option value="'.$restaurantRow['restaurant_id'].'">'.$restaurantRow['name'].'</option>';
-                        };
+                                    $restaurant = $dbh->query('SELECT * from restaurant');  
+                                    while($restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC)){
+                                        echo '<option value="'.$restaurantRow['restaurant_id'].'">'.$restaurantRow['name'].'</option>';
+                                    };
 
-        echo '</select><br>
-                        <label for="add_coupon_discount">折扣</label>
-                        <input type="number" name="add_coupon_discount" id="add_coupon_discount" class="form-control" min="1" max="100"><br>
+                    echo '</select><br>
+                                    <label for="add_coupon_discount">折扣</label>
+                                    <input type="number" name="add_coupon_discount" id="add_coupon_discount" class="form-control" min="1" max="100"><br>
 
-                        <label for="add_coupon_details">詳細說明</label>
-                        <input type="text" name="add_coupon_details" id="add_coupon_details" class="form-control"><br>
+                                    <label for="add_coupon_details">詳細說明</label>
+                                    <input type="text" name="add_coupon_details" id="add_coupon_details" class="form-control"><br>
 
-                        <label for="add_coupon_date">有效期限</label>
-                        <input type="datetime-local" name="add_coupon_date" id="add_coupon_date" class="form-control" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}"><br>
+                                    <label for="add_coupon_date">有效期限</label>
+                                    <input type="datetime-local" name="add_coupon_date" id="add_coupon_date" class="form-control" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}"><br>
 
-                        <label for="add_coupon_cost">兌換點數</label>
-                        <input type="number" name="add_coupon_cost" id="add_coupon_cost" class="form-control" min="1" max="100"><br>
+                                    <label for="add_coupon_cost">兌換點數</label>
+                                    <input type="number" name="add_coupon_cost" id="add_coupon_cost" class="form-control" min="1" max="100"><br>
 
-                        <label for="add_coupon_file">條碼</label>
-                        <input type="file" name="add_coupon_file" accept="image/png, image/jpeg">
-                        <br><br>
-                        <button class="btn btn-warning" style="float:right;" >新 增</button>
+                                    <label for="add_coupon_file">條碼</label>
+                                    <input type="file" name="add_coupon_file" accept="image/png, image/jpeg">
+                                    <br><br>
+                                    <button class="btn btn-warning" style="float:right;" >新 增</button>
 
-                        </form>
-                    <br>
-                    </div>
-                  </div>
-                </div>
-                <div>';
+                                    </form>
+                                <br>
+                                </div>
+                              </div>
+                            </div>
+                            <div>';
 
-    }
-}
-?>
-<script type="text/javascript">
-// coupon redeem
-function redeemCoupon(ID) {
-  var txt;
-  if (confirm("你確定要兌換這張coupon麻!")) {
-    // 確認兌換
-    $.post(
-        "php/coupon_redeem.php",
-        {
-            redeem_coupon_id: ID
-        },
-        // function(data, status, xhr){
-        //     alert("Data: " + data + "\nStatus: " + status + "\nxhr: "+xhr);
-        // }
-    );
-    
-    txt = "You pressed OK!";
-    window.location.reload();
+                }
+            }
+            ?>
 
-  } else {
-    // 取消
-    txt = "You pressed Cancel!";
-  }
-  document.getElementById("demo").innerHTML = txt;
-}
-// mycoupon used
-function changeCouponStatus(couponID){
-    $.post(
-        "php/coupon_used.php",
-        {
-            id: couponID
-        }
-    );
-    window.location.reload();
-}    
-</script>
                         </div>
                     </div>
                 </div>
@@ -383,39 +346,53 @@ function changeCouponStatus(couponID){
         
     </div>
 
-    <!-- 評論紀錄頁面，要串聯杰修負責的資料表 -->
+    <!-- 評論紀錄頁面===================================================================== -->
     <div class="tab-pane container fade" id="commentRecord"><br>
         <div class="container" style="background-color: rgb(255,255,255,0.4); width: 100%;">
             <br>
             <div class="row" style="padding: 5px 120px;text-align: center;">
                 <div class="col-sm-4"></div>
                 <div class="col-sm-2" style="font-size: 18px; text-align: right; margin-top: 6px;"><b>總共評論篇數</b></div>
-                <div class="col-sm-2" style="font-size: 24px; color: #FFBE04;"><b>10</b></div>
+                <div class="col-sm-2" style="font-size: 24px; color: #FFBE04;"><b>
+                    <?php
+                        $reply = $dbh->prepare('SELECT count(*) AS totalReply from reply WHERE member_id = ?');  
+                        $reply->execute(array($_SESSION['member_id']));
+                        $replyRow = $reply->fetch(PDO::FETCH_ASSOC);
+                        echo $replyRow['totalReply'];
+                    ?>
+                </b></div>
                 <div class="col-sm-4"></div>
             </div><br>
         </div><br>
 
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th class="count">餐廳</th>
-                    <th class="record">內容</th>
-                    <th class="date">評論時間</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="count">這間餐廳</td>
-                    <td class="record">還不錯</td>
-                    <td class="date">2020/02/02</td>
-                </tr>
+    <?php
+        $reply = $dbh->prepare('SELECT * from reply WHERE member_id = ?');  
+        $reply->execute(array($_SESSION['member_id']));
+        echo '<table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th class="count">餐廳</th>
+                            <th class="record">內容</th>
+                            <th class="date">評論時間</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+        while($replyRow = $reply->fetch(PDO::FETCH_ASSOC)){
+            $restaurant = $dbh->prepare('SELECT * from restaurant WHERE restaurant_id = ?');  
+            $restaurant->execute(array($replyRow["restaurant_id"]));
+            $restaurantRow = $restaurant->fetch(PDO::FETCH_ASSOC);
 
-            </tbody>
-        </table>
+            echo '<tr><td class="count">'.$restaurantRow['name'].'</td>
+            <td class="record">'.$replyRow['content'].'</td>
+            <td class="date">'.$replyRow['date_posted'].'</td></tr>';
+        }
+        echo ' </tbody></table>';
+    ?>
+                       
     </div>
     
 
-    <!-- 我的food points頁面 -->
+    <!-- 我的food points頁面===================================================================== -->
     <div class="tab-pane container fade" id="myPoint"><br>
         <div class="container" style="background-color: rgb(255,255,255,0.4); width: 100%;">
             <br>

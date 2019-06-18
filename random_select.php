@@ -9,12 +9,18 @@ include("pdoInc.php");     //PDO
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="js/chatroom.js"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="spin_game/css/normalize.css" />
     <link rel="stylesheet" type="text/css" href="spin_game/css/htmleaf-demo.css">
     <link rel="stylesheet" type="text/css" href="spin_game/css/style.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles/chatroom.css">
+    <link rel="stylesheet" type="text/css" href="styles/index.css">
+    
+    
     <title>大Food翁 - 機會 命運</title>
     <!-- 轉盤範例  http://www.htmleaf.com/html5/html5-canvas/201611174201.html 
                   http://www.htmleaf.com/Demo/201611174202.html -->
@@ -139,7 +145,6 @@ include("pdoInc.php");     //PDO
 
     $(document).ready(function(){
         //動態添加大轉盤的獎品與獎品區域的背景顏色
-        // turnplate.restaraunts = ["波波恰恰", "高句麗", "小曼谷", "古早味蛋餅", "金鮨日式料理", "龍角咖啡", "左撇子", "四川飯館", "米塔義式廚房", "小公寓"];
         <?php
             if(isset($_GET['restaurant_type'])&& $_GET['restaurant_type']!='隨機'){
                 $restaurant = $dbh->prepare('SELECT * from restaurant WHERE category = ? ORDER BY RAND() LIMIT 10'); //ORDER BY RAND() 隨機順序
@@ -187,7 +192,7 @@ include("pdoInc.php");     //PDO
                 animateTo:angles+1800,
                 duration:8000,
                 callback:function (){
-                    // alert(txt);
+                    alert("就決定是 " + txt + " !");   //結束的alert視窗
                     turnplate.bRotate = !turnplate.bRotate;
                 }
             });
@@ -200,38 +205,7 @@ include("pdoInc.php");     //PDO
             var item = rnd(1,turnplate.restaraunts.length);
             //奖品数量等于10,指针落在对应奖品区域的中心角度[252, 216, 180, 144, 108, 72, 36, 360, 324, 288]
             rotateFn(item, turnplate.restaraunts[item-1]);
-            /* switch (item) {
-                case 1:
-                    rotateFn(252, turnplate.restaraunts[0]);
-                    break;
-                case 2:
-                    rotateFn(216, turnplate.restaraunts[1]);
-                    break;
-                case 3:
-                    rotateFn(180, turnplate.restaraunts[2]);
-                    break;
-                case 4:
-                    rotateFn(144, turnplate.restaraunts[3]);
-                    break;
-                case 5:
-                    rotateFn(108, turnplate.restaraunts[4]);
-                    break;
-                case 6:
-                    rotateFn(72, turnplate.restaraunts[5]);
-                    break;
-                case 7:
-                    rotateFn(36, turnplate.restaraunts[6]);
-                    break;
-                case 8:
-                    rotateFn(360, turnplate.restaraunts[7]);
-                    break;
-                case 9:
-                    rotateFn(324, turnplate.restaraunts[8]);
-                    break;
-                case 10:
-                    rotateFn(288, turnplate.restaraunts[9]);
-                    break;
-            } */
+        
             console.log(item);
         });
     });
@@ -313,5 +287,31 @@ include("pdoInc.php");     //PDO
     }
 
     </script>
+
+<?php
+// 聊天視窗  有登入才可以使用 ===================================================================================
+    if(isset($_SESSION['account']) && $_SESSION['account'] != null){
+        echo '<img id="chat_icon" src="pic/chat_icon.png" style="height: 80px; width: 80px; position: fixed; bottom: 30px; right: 35px;z-index:10;" onclick="this.style.display=\'none\';getElementById(\'close_icon\').style.display=\'block\';getElementById(\'chatroom\').style.display=\'block\';" >
+            <img id="close_icon" src="pic/close.png" style="height: 90px; width: 90px; position: fixed; bottom: 25px; right: 30px; display: none;z-index:10;" onclick="this.style.display=\'none\';getElementById(\'chat_icon\').style.display=\'block\';getElementById(\'chatroom\').style.display=\'none\';" >';
+
+        echo '<div id="chatroom" class="container" style="position: fixed; right:30px; bottom: 135px; height:400px; width: 430px; display: none; z-index:12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">聊天室</div>
+                    <div class="card-body">
+                        <table>
+                            <tr><td><textarea id="showMsgHere" disabled="disabled"></textarea></td></tr>
+                            <tr><td>
+                                <form>
+                                    <input type="text" id="msg" placeholder="訊息" style="width:100%;height:2em">
+                                    <input type="button" value="送出" onclick="sendMsg();">
+                                </form>
+                            </td></tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            ';
+    }
+?>
 </body>
 </html>
