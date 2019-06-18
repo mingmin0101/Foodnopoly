@@ -124,24 +124,21 @@ https://leafletjs.com/reference-1.4.0.html#map-example
               <a class="nav-link" href="index.php">店家總覽</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="random_select.php">餐廳推薦</a>
+              <a class="nav-link" href="random_select.php?restaurant_type=隨機">餐廳推薦</a>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto" >
             <?php
                 if(isset($_SESSION['account']) && $_SESSION['account'] != null){
                     //修改會員資料
-                    // echo '<a href="modify_member_info.php"><img src="hw6_pic/profile.png" style="position: fixed; right: 140px; top:95px; height:32px;" onmouseover="this.src=\'hw6_pic/profile_hover.png\'" onmouseleave="this.src=\'hw6_pic/profile.png\'"></a>';
+                    echo '<a href="member_info.php"><img src="pic/profile.png" style="height:32px; margin:0px 5px;" onmouseover="this.src=\'pic/profile_hover.png\'" onmouseleave="this.src=\'pic/profile.png\'"></a>';
                     //會員登出
-                    echo '<li class="nav-item"><a href="php_sess_logout.php"><img src="pic/logout.png" style="height:32px;" onmouseover="this.src=\'pic/logout_hover.png\'" onmouseleave="this.src=\'pic/logout.png\'" onclick="<?php echo \'<meta http-equiv=REFRESH CONTENT=0;url=index.php>\';?>"></a></li>';
+                    echo '<li class="nav-item"><a href="php_sess_logout.php"><img src="pic/logout.png" style="height:32px; margin:0px 5px;" onmouseover="this.src=\'pic/logout_hover.png\'" onmouseleave="this.src=\'pic/logout.png\'" onclick="<?php echo \'<meta http-equiv=REFRESH CONTENT=0;url=index.php>\';?>"></a></li>';
                 }
                 else{
                     echo '<li class="nav-item"><a href="member.php"><img src="pic/login.png" style="height:32px;" onmouseover="this.src=\'pic/login_hover.png\'" onmouseleave="this.src=\'pic/login.png\'"></a></li>';
                 }
             ?>
-            <!-- <li class="nav-item">
-              <a class="nav-link" href="member.php"><img src="pic/login.png" style="height:32px;" onmouseover="this.src='pic/login_hover.png'" onmouseleave="this.src='pic/login.png'"></a>
-            </li>   -->
         </ul>
     </nav>
 
@@ -325,7 +322,6 @@ https://leafletjs.com/reference-1.4.0.html#map-example
                 <tr><td><textarea id="showMsgHere" disabled="disabled"></textarea></td></tr>
                 <tr><td>
                     <form>
-                        <!-- <input type="text" id="nickname" placeholder="暱稱" style="width:5em;height:2em"> -->
                         <input type="text" id="msg" placeholder="訊息" style="width:100%;height:2em">
                         <input type="button" value="送出" onclick="sendMsg();">
                     </form>

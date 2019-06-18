@@ -1,7 +1,7 @@
 <?php
 session_start();
 include("pdoInc.php");     //PDO
-include('reply.php');
+//include('reply.php');
 $rid = $_GET['id'];
 ?>
 
@@ -84,7 +84,39 @@ else if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST[
         $memberUpdatePoint->execute(array($_SESSION['member_id']));
 
 }
+
+
+
+//刪除留言
+if(isset($_GET['del']) && isset($_SESSION['account'])){    
+    $member = $dbh->prepare('SELECT * FROM member WHERE account = ?'); //目前登入的會員
+    $member->execute(array($_SESSION['account']));  //目前登入的會員
+
+    $reply = $dbh->prepare('SELECT * FROM reply WHERE reply_id = ?'); 
+    $delreply = $dbh->prepare('DELETE FROM reply WHERE reply_id = ?'); 
+
+    while ($memberRow= $member->fetch(PDO::FETCH_ASSOC)) {
+
+        $reply->execute(array((int)$_GET['del']));    //從全部reply中select出被刪的是哪一個reply
+        $replyRow = $reply->fetch(PDO::FETCH_ASSOC);
+        
+        if($_SESSION['member_id'] == $replyRow['member_id'] || $memberRow['is_admin'] == 1){   //確認是自己留言的  || 是管理員
+            //if($reply->rowCount() == 1){   //檢查del傳進來的參數有沒有資料且恰好對應一筆
+                $delreply->execute(array((int)$_GET['del']));
+                echo '<meta http-equiv=REFRESH CONTENT=0;url='.basename($_SERVER['PHP_SELF'])."?id=$rid>";
+            //}  
+        }else{
+                die('<meta http-equiv=REFRESH CONTENT=0;url='.basename($_SERVER['PHP_SELF'])."?id=$rid>");   //die直接不跑後面的東西
+        }      
+        
+    }
+}
+
 ?>
+
+
+
+
 
 <html>
 <head>
@@ -167,7 +199,7 @@ else if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST[
           <a class="nav-link" href="index.php">店家總覽</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="random_select.php">餐廳推薦</a>
+          <a class="nav-link" href="random_select.php?restaurant_type=隨機">餐廳推薦</a>
         </li>
 
     </ul>
@@ -186,7 +218,7 @@ else if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST[
     </ul>
 </nav>
 
-<br><br>
+<br><br><br><br>
 <!-- jxiupart start -->
 <div class="container">
     <div class="row">
@@ -218,6 +250,7 @@ else if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST[
     </div>
     <br><br>
     <hr>
+    <br>
     <div class="row" id="reply">
         <div style="clear: both;"><br/><br/><br/><br/></div>
         <!--以下之後為用php改寫-->
@@ -225,9 +258,61 @@ else if(isset($_SESSION['account']) && isset($_POST['content']) && isset($_POST[
 
             <?php
                 // print topic according to rid
-                replyTopic($rid);
+                // replyTopic($rid);
+
+                $select = mysqli_query($con, "SELECT *
+                                      FROM restaurant
+                                      WHERE restaurant_id = $rid");
+                while($row = mysqli_fetch_assoc($select)){
+                    echo "<h4>大家對於 <b>".$row['name']."</b> 的評價</h4><br>";
+                }
                 // print content according to rid
-                replyContent($rid);
+                // replyContent($rid);
+
+
+                $select = mysqli_query($con, "SELECT *
+                                      FROM   reply
+                                      WHERE  restaurant_id = $rid");
+
+                $member = $dbh->prepare('SELECT * FROM member WHERE account = ?'); //目前登入的會員
+                                        
+                if(mysqli_num_rows($select) != 0){
+                    while($row = mysqli_fetch_assoc($select)){
+                        echo '<div class="card text-dark" style="background-color:rgb(255,255,255,0.3)">
+                                <div class="card-body">';
+
+                        echo '<div style="float:right">評 價 ';
+                        for ($i=0;$i<$row['rate'];$i++){
+                            echo '<span class="fa fa-star checked"></span>';
+                        }
+                        for ($j=0;$j<5-$row['rate'];$j++){
+                            echo '<span class="fa fa-star"></span>';
+                        }
+                        echo '</div>';
+
+                        echo "<p>".$row['replier']." 在 ".$row['date_posted']." 寫了一則評論</p>";
+                        // echo "<p> 評分：".$row['rate']."分</p>";
+
+                        if($row['img_content'] != '0'){
+                            echo "<img src='test/".$row['img_content']."' width='200px'>";
+                        }
+                        echo "<p style='margin:0px;'>".$row['content']."</p>";
+
+
+
+                        if(isset($_SESSION['account'])){  //有登入
+                            $member->execute(array($_SESSION['account']));  //目前登入的會員
+                            while ($memberRow= $member->fetch(PDO::FETCH_ASSOC)) {
+                                if(isset($_GET['id']) && ($memberRow['id'] == $row['member_id'] || $memberRow['is_admin'] == 1)){ //如果是自己留言的 || 如果是管理員
+                                    echo '<a href="restaurant.php?id='.$_GET['id'].'&del='.$row['reply_id'].'"><img src="pic/trash.png" style="height:18px;float:right;" onmouseover="this.src=\'pic/trash_hover.png\'" onmouseleave="this.src=\'pic/trash.png\'"></a>';
+                                }
+                            }
+                        }
+                        echo '</div></div><br>';
+                    }
+                }
+
+        ////
 
                 if(isset($_SESSION['account'])){
                     echo "<br><form action='restaurant.php?id=".$_GET['id']."' method='POST' enctype='multipart/form-data'>
